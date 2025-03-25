@@ -31,16 +31,21 @@
     }
     table {
       width: 100%;
-      max-width: 800px;
+      max-width: 1000px;
       border-collapse: collapse;
       margin-top: 1rem;
+      font-size: 0.9rem;
     }
     th, td {
-      padding: 6px 10px;
+      padding: 6px 8px;
       border: 1px solid #ccc;
+      text-align: center;
     }
     th {
       background-color: #dbe9f4;
+    }
+    td:first-child, th:first-child {
+      text-align: left;
     }
     ul {
       padding-left: 1.2rem;
@@ -54,7 +59,6 @@
   <main>
     <h1>HSRastit 2025 - Tilastopalvelu</h1>
     <p>Tälle sivustolle rakennetaan tilastopalvelu, mikä kokoaa kaikkien HS-rastitapahtumien tuloksista yhteenvedon ja kokonaispistetilanteen.</p>
-    <p>Tulosten esitysmuoto ja sivusto elää ja kehittyy, kun tapahtumia on enemmän käytynä. Ellei tekoäly kyykkää.</p>
     <div id="tulokset"></div>
   </main>
 
@@ -66,11 +70,6 @@
 
     <h2>Tulevat tapahtumat</h2>
     <ul>
-      <li>Kirvasto, RiSu, 30.3.</li>
-      <li>Urheilupuisto-Keskusta, RiSu, 6.4.</li>
-      <li>Urheilupuisto-Keskusta, RiSu, 13.4.</li>
-      <li>Ravirata Kirvasto, RiSu, 15.4.</li>
-      <li>Ahvenisto, HlS, 16.4.</li>
       <li>Ahvenisto 2023, 16.4.</li>
       <li>Omatoimirastit Ahvenisto, 17.–21.4.</li>
       <li>Monikkala/2024, 24.4.</li>
@@ -119,7 +118,6 @@
       <li>Yökuppi: Palssarinkangas, 6.10.</li>
       <li>Yökuppi Tiehaaranvuori 2024, 13.10.</li>
       <li>Yökuppi Tiirinkoski 2025, 20.10.</li>
-
     </ul>
   </aside>
 
@@ -127,25 +125,37 @@
     async function haeJaNäytäTulokset() {
       const vastaus = await fetch('Riksuntulokset.html');
       const teksti = await vastaus.text();
-
       const parseri = new DOMParser();
       const htmlDoc = parseri.parseFromString(teksti, 'text/html');
       const container = document.getElementById('tulokset');
-
       const kaikkiRadat = htmlDoc.querySelectorAll('h3');
 
       kaikkiRadat.forEach((rata) => {
-        const rataNimi = rata.textContent;
+        const rataNimi = rata.textContent.split(' ')[0] + ' ' + rata.textContent.split(' ')[1]; // esim. "Rata A"
         const pre = rata.nextElementSibling;
-
         if (!pre || pre.tagName !== 'PRE') return;
 
-        const rivit = pre.textContent.trim().split('\n').slice(1); // ohita "(Lähti...)"-rivi
+        const rivit = pre.textContent.trim().split('\n').slice(1); // ohita "lähti"-rivi
         const taulukko = document.createElement('table');
         const thead = document.createElement('thead');
-        thead.innerHTML = '<tr><th>Sija</th><th>Nimi</th><th>Aika</th><th>Erotus</th><th>Osallistumisia</th></tr>';
+        thead.innerHTML = `
+          <tr>
+            <th>Kokonaissijoitus</th>
+            <th>Nimi</th>
+            <th>Osallistumisia</th>
+            <th>1. sijoja</th>
+            <th>2. sijoja</th>
+            <th>3. sijoja</th>
+            <th>4. sijoja</th>
+            <th>5. sijoja</th>
+            <th>6. sijoja</th>
+            <th>7. sijoja</th>
+            <th>8. sijoja</th>
+            <th>9. sijoja</th>
+            <th>10. sijoja</th>
+            <th>TOP 10 ulkopuolella</th>
+          </tr>`;
         taulukko.appendChild(thead);
-
         const tbody = document.createElement('tbody');
 
         rivit.forEach(rivi => {
@@ -153,19 +163,41 @@
           const eiAikaa = rivi.includes("ei aikaa");
 
           if (match) {
-            const [, sija, nimi, aika, erotus] = match;
+            const [ , sija, nimi ] = match;
+            const sijoitusNum = parseInt(sija);
+            const sijoitukset = Array(10).fill(0);
+            let top10ulkopuolella = 0;
+
+            if (sijoitusNum >= 1 && sijoitusNum <= 10) {
+              sijoitukset[sijoitusNum - 1] = 1;
+            } else {
+              top10ulkopuolella = 1;
+            }
+
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${sija}</td><td>${nimi}</td><td>${aika}</td><td>${erotus || ''}</td><td>1</td>`;
+            tr.innerHTML = `
+              <td>${sija}</td>
+              <td>${nimi}</td>
+              <td>1</td>
+              ${sijoitukset.map(lkm => `<td>${lkm}</td>`).join('')}
+              <td>${top10ulkopuolella}</td>
+            `;
             tbody.appendChild(tr);
+
           } else if (eiAikaa) {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>-</td><td>${rivi.trim()}</td><td colspan="2">Ei aikaa</td><td>1</td>`;
+            tr.innerHTML = `
+              <td>-</td>
+              <td>${rivi.trim()}</td>
+              <td>1</td>
+              ${Array(10).fill('<td>0</td>').join('')}
+              <td>0</td>
+            `;
             tbody.appendChild(tr);
           }
         });
 
         taulukko.appendChild(tbody);
-
         const otsikko = document.createElement('h2');
         otsikko.textContent = rataNimi;
         container.appendChild(otsikko);
