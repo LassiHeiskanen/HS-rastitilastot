@@ -119,7 +119,8 @@
       const kaikkiRadat = htmlDoc.querySelectorAll('h3');
       const container = document.getElementById('tulokset');
 
-      const tapahtumapaivat = ['23.3.', '30.3.', '6.4.', '13.4.', '16.4.', '24.4.', '1.5.', '8.5.', '15.5.', '22.5.'];
+      const tapahtumapaivat = ['23.3.'];
+      const menneet = new Set(tapahtumapaivat);
 
       kaikkiRadat.forEach((rata) => {
         const rataNimi = rata.textContent.trim();
@@ -178,8 +179,8 @@
           const tr = document.createElement('tr');
           let rivi = `<td>${sijalaskuri++}.</td><td class="name">${os.nimi}</td><td>${os.osallistumisia}</td>`;
           tapahtumapaivat.forEach(pvm => {
-            const s = os.sijoitukset[pvm] ?? 'x';
-            rivi += `<td>${s}</td>`;
+            const s = os.sijoitukset[pvm];
+            rivi += `<td>${menneet.has(pvm) ? (s ?? 'x') : ''}</td>`;
           });
           tr.innerHTML = rivi;
           tbody.appendChild(tr);
