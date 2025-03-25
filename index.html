@@ -8,6 +8,19 @@
       font-family: sans-serif;
       padding: 2rem;
       background: #f9f9f9;
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+    }
+    main {
+      flex: 3;
+    }
+    aside {
+      flex: 1;
+      background: #eef4fa;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
     h1 {
       color: #2a4d69;
@@ -29,13 +42,36 @@
     th {
       background-color: #dbe9f4;
     }
+    ul {
+      padding-left: 1.2rem;
+    }
+    li {
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 <body>
-  <h1>HSRastit 2025 - Tilastopalvelu</h1>
-  <p>Tälle sivustolle rakennetaan tilastopalvelu, mikä kokoaa kaikkien HS-rastitapahtumien tuloksista yhteenvedon ja kokonaispistetilanteen. </p>
+  <main>
+    <h1>HSRastit 2025 - Tilastopalvelu</h1>
+    <p>Tälle sivustolle rakennetaan tilastopalvelu, mikä kokoaa kaikkien HS-rastitapahtumien tuloksista yhteenvedon ja kokonaispistetilanteen.</p>
+    <div id="tulokset"></div>
+  </main>
 
-  <div id="tulokset"></div>
+  <aside>
+    <h2>Menneet tapahtumat</h2>
+    <ul>
+      <li>Urheilupuisto-Keskusta, RiSu, 23.3.</li>
+    </ul>
+
+    <h2>Tulevat tapahtumat</h2>
+    <ul>
+      <li>Kirvasto, RiSu, 30.3.</li>
+      <li>Urheilupuisto-Keskusta, RiSu, 6.4.</li>
+      <li>Urheilupuisto-Keskusta, RiSu, 13.4.</li>
+      <li>Ravirata Kirvasto, RiSu, 15.4.</li>
+      <li>Ahvenisto, HlS, 16.4.</li>
+    </ul>
+  </aside>
 
   <script>
     async function haeJaNäytäTulokset() {
