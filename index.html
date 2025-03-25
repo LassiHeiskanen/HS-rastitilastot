@@ -82,31 +82,6 @@
       <li>Hiidenkorpi / 2023, 5.6.</li>
       <li>Evo, 12.6.</li>
       <li>Pyyttämö 2023, 24.6.</li>
-      <li>Poutunkangas, 26.6.</li>
-      <li>Taulamaa 2023, 1.7.</li>
-      <li>Kuusisenkallio / 2023, 3.7.</li>
-      <li>Akkijärvi, 8.7.</li>
-      <li>Kukonnokka/2024, 10.7.</li>
-      <li>Kiipula 2024, 15.7.</li>
-      <li>Hankala, 17.7.</li>
-      <li>Vuortenkylä /2023, 22.7.</li>
-      <li>Ahvenisto 2023, 24.7.</li>
-      <li>Pekola, 31.7.</li>
-      <li>Ilamo / 2024, 7.8.</li>
-      <li>Vehkosuo, 14.8.</li>
-      <li>Korpi-Lauri, 21.8.</li>
-      <li>Takaperä, 28.8.</li>
-      <li>Syrjäntausta, 4.9.</li>
-      <li>Kulomäki/2025, 11.9.</li>
-      <li>Yökuppi Hyrvälä, 15.9.</li>
-      <li>Tenhola / 2022, 18.9.</li>
-      <li>Yökuppi: Poutunkangas, 22.9.</li>
-      <li>Tiirinkoski 2025, 25.9.</li>
-      <li>Yökuppi Moreeni, 29.9.</li>
-      <li>Kolkanmäki 2023, 2.10.</li>
-      <li>Yökuppi: Palssarinkangas, 6.10.</li>
-      <li>Yökuppi Tiehaaranvuori 2024, 13.10.</li>
-      <li>Yökuppi Tiirinkoski 2025, 20.10.</li>
     </ul>
   </aside>
 
@@ -125,6 +100,9 @@
       kaikkiRadat.forEach((rata) => {
         const pre = rata.nextElementSibling;
         if (!pre || pre.tagName !== 'PRE') return;
+
+        const rataotsikko = rata.textContent.match(/Rata [A-Z]/);
+        const rataNimi = rataotsikko ? rataotsikko[0] : rata.textContent.trim();
 
         const rivit = pre.textContent.trim().split('\n').slice(1);
         const osallistujat = new Map();
@@ -190,6 +168,10 @@
         });
 
         taulukko.appendChild(tbody);
+
+        const otsikko = document.createElement('h2');
+        otsikko.textContent = rataNimi;
+        container.appendChild(otsikko);
         container.appendChild(taulukko);
       });
     }
