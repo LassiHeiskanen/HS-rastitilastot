@@ -93,7 +93,7 @@
         const rivit = pre.textContent.trim().split('\n').slice(1); // ohita "(Lähti...)"-rivi
         const taulukko = document.createElement('table');
         const thead = document.createElement('thead');
-        thead.innerHTML = '<tr><th>Sija</th><th>Nimi</th><th>Aika</th><th>Erotus</th></tr>';
+        thead.innerHTML = '<tr><th>Sija</th><th>Nimi</th><th>Aika</th><th>Erotus</th><th>Osallistumisia</th></tr>';
         taulukko.appendChild(thead);
 
         const tbody = document.createElement('tbody');
@@ -105,11 +105,11 @@
           if (match) {
             const [, sija, nimi, aika, erotus] = match;
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${sija}</td><td>${nimi}</td><td>${aika}</td><td>${erotus || ''}</td>`;
+            tr.innerHTML = `<td>${sija}</td><td>${nimi}</td><td>${aika}</td><td>${erotus || ''}</td><td>1</td>`;
             tbody.appendChild(tr);
           } else if (eiAikaa) {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>-</td><td>${rivi.trim()}</td><td colspan="2">Ei aikaa</td>`;
+            tr.innerHTML = `<td>-</td><td>${rivi.trim()}</td><td colspan="2">Ei aikaa</td><td>1</td>`;
             tbody.appendChild(tr);
           }
         });
