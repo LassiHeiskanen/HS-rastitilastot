@@ -2,28 +2,29 @@
 <html lang="fi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HSRastit 2025 - Tilastot</title>
+  <title>HSRastit 2025 - Tulokset</title>
   <style>
     body {
       font-family: sans-serif;
-      margin: 2em;
+      padding: 2rem;
       background: #f9f9f9;
-      color: #333;
     }
     h1 {
       color: #2a4d69;
     }
+    h2 {
+      margin-top: 2rem;
+      color: #1e3c72;
+    }
     table {
-      border-collapse: collapse;
-      margin-top: 2em;
       width: 100%;
-      max-width: 600px;
+      max-width: 800px;
+      border-collapse: collapse;
+      margin-top: 1rem;
     }
     th, td {
-      padding: 8px 12px;
+      padding: 6px 10px;
       border: 1px solid #ccc;
-      text-align: left;
     }
     th {
       background-color: #dbe9f4;
@@ -31,33 +32,62 @@
   </style>
 </head>
 <body>
-  <h1>HSRastit 2025 - Tilastosivusto</h1>
-  <p>Tervetuloa seuraamaan Hämeenlinnan seudun kuntorastien tilastoja!</p>
+  <h1>HSRastit 2025 - Tulokset</h1>
+  <p>Alla näkyvät tulokset tapahtumasta 23.3.2025 (Atomi).</p>
 
-  <h2>Esimerkkitilasto</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Suunnistaja</th>
-        <th>Osallistumisia</th>
-        <th>Voittoja</th>
-        <th>Keskisijoitus</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Matti Meikäläinen</td>
-        <td>3</td>
-        <td>2</td>
-        <td>1.7</td>
-      </tr>
-      <tr>
-        <td>Liisa Rastija</td>
-        <td>4</td>
-        <td>1</td>
-        <td>3.2</td>
-      </tr>
-    </tbody>
-  </table>
+  <div id="tulokset"></div>
+
+  <script>
+    async function haeJaNäytäTulokset() {
+      const vastaus = await fetch('Riksuntulokset.html');
+      const teksti = await vastaus.text();
+
+      const parseri = new DOMParser();
+      const htmlDoc = parseri.parseFromString(teksti, 'text/html');
+      const container = document.getElementById('tulokset');
+
+      const kaikkiRadat = htmlDoc.querySelectorAll('h3');
+
+      kaikkiRadat.forEach((rata) => {
+        const rataNimi = rata.textContent;
+        const pre = rata.nextElementSibling;
+
+        if (!pre || pre.tagName !== 'PRE') return;
+
+        const rivit = pre.textContent.trim().split('\n').slice(1); // ohita "lähti"-rivi
+        const taulukko = document.createElement('table');
+        const thead = document.createElement('thead');
+        thead.innerHTML = '<tr><th>Sija</th><th>Nimi</th><th>Aika</th><th>Erotus</th></tr>';
+        taulukko.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+
+        rivit.forEach(rivi => {
+          const match = rivi.match(/^(\d+)\.\s+(.+?)\s+(\d{1,2}\.\d{2}(?:\.\d{2})?)\s*(\+\d{2}\.\d{2})?$/);
+          const eiAikaa = rivi.includes("ei aikaa");
+
+          if (match) {
+            const [, sija, nimi, aika, erotus] = match;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${sija}</td><td>${nimi}</td><td>${aika}</td><td>${erotus || ''}</td>`;
+            tbody.appendChild(tr);
+          } else if (eiAikaa) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>-</td><td>${rivi.trim()}</td><td colspan="2">Ei aikaa</td>`;
+            tbody.appendChild(tr);
+          }
+        });
+
+        taulukko.appendChild(tbody);
+
+        const otsikko = document.createElement('h2');
+        otsikko.textContent = rataNimi;
+        container.appendChild(otsikko);
+        container.appendChild(taulukko);
+      });
+    }
+
+    haeJaNäytäTulokset();
+  </script>
 </body>
 </html>
