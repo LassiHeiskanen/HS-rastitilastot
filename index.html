@@ -8,204 +8,122 @@
       font-family: sans-serif;
       padding: 2rem;
       background: #f9f9f9;
-      display: flex;
-      flex-direction: row;
-      gap: 2rem;
-    }
-    main {
-      flex: 3;
-    }
-    aside {
-      flex: 1;
-      background: #eef4fa;
-      padding: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
     }
     h1 {
       color: #2a4d69;
     }
-    h2 {
-      margin-top: 2rem;
-      color: #1e3c72;
-    }
     table {
-      width: 100%;
-      max-width: 1000px;
       border-collapse: collapse;
-      margin-top: 1rem;
-      font-size: 0.9rem;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
     }
     th, td {
-      padding: 6px 8px;
       border: 1px solid #ccc;
+      padding: 4px;
       text-align: center;
+      min-width: 40px;
     }
-    th {
+    th.rotate {
+      height: 120px;
+      white-space: nowrap;
+      vertical-align: bottom;
+      padding: 0;
+    }
+    th.rotate > div {
+      transform: rotate(-90deg);
+      transform-origin: bottom left;
+      white-space: nowrap;
+    }
+    th.static {
+      vertical-align: middle;
       background-color: #dbe9f4;
     }
-    td:first-child, th:first-child {
+    th.rotate, th.static {
+      background-color: #dbe9f4;
+    }
+    td.name {
       text-align: left;
-    }
-    ul {
-      padding-left: 1.2rem;
-    }
-    li {
-      margin-bottom: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <main>
-    <h1>HSRastit 2025 - Tilastopalvelu</h1>
-    <p>Tälle sivustolle rakennetaan tilastopalvelu, mikä kokoaa kaikkien HS-rastitapahtumien tuloksista yhteenvedon ja kokonaispistetilanteen.</p>
-    <div id="tulokset"></div>
-  </main>
+  <h1>HSRastit 2025 - Kilpailukohtaiset sijoitukset</h1>
 
-  <aside>
-    <h2>Menneet tapahtumat</h2>
-    <ul>
-      <li>Urheilupuisto-Keskusta, RiSu, 23.3.</li>
-    </ul>
-
-    <h2>Tulevat tapahtumat</h2>
-    <ul>
-      <li>Ahvenisto 2023, 16.4.</li>
-      <li>Omatoimirastit Ahvenisto, 17.–21.4.</li>
-      <li>Monikkala/2024, 24.4.</li>
-      <li>Vipukorpi 2024, 1.5.</li>
-      <li>Omatoimirastit Vipukorpi, 2.–4.5.</li>
-      <li>Moreeni / 2023, 8.5.</li>
-      <li>Omatoimirastit Moreeni, 9.–11.5.</li>
-      <li>Konttila 2024, 15.5.</li>
-      <li>Omatoimirastit Konttila, 16.–18.5.</li>
-      <li>Evo, 22.5.</li>
-      <li>Omatoimirasti: Evo, 23.–25.5.</li>
-      <li>Aulanko, ulkoilumaja / 2024, 29.5.</li>
-      <li>Hiidenkorpi / 2023, 5.6.</li>
-      <li>Evo, 12.6.</li>
-      <li>Omatoimirasti: Evo, 13.–15.6.</li>
-      <li>Pyyttämö 2023, 24.6.</li>
-      <li>Poutunkangas, 26.6.</li>
-      <li>Taulamaa 2023, 1.7.</li>
-      <li>Kuusisenkallio / 2023, 3.7.</li>
-      <li>Akkijärvi, 8.7.</li>
-      <li>Kukonnokka/2024, 10.7.</li>
-      <li>Kiipula 2024, 15.7.</li>
-      <li>Hankala, 17.7.</li>
-      <li>Vuortenkylä /2023, 22.7.</li>
-      <li>Ahvenisto 2023, 24.7.</li>
-      <li>Omatoimirastit Ahvenisto, 25.–27.7.</li>
-      <li>Pekola, 31.7.</li>
-      <li>Ilamo / 2024, 7.8.</li>
-      <li>Vehkosuo, 14.8.</li>
-      <li>Omatoimirastit: Vehkosuo, 15.–17.8.</li>
-      <li>Korpi-Lauri, 21.8.</li>
-      <li>Takaperä, 28.8.</li>
-      <li>Omatoimirasti: Takaperä, 29.–31.8.</li>
-      <li>Syrjäntausta, 4.9.</li>
-      <li>Omatoimirasti: Syrjäntausta, 5.–7.9.</li>
-      <li>Kulomäki/2025, 11.9.</li>
-      <li>Yökuppi Hyrvälä, 15.9.</li>
-      <li>Tenhola / 2022, 18.9.</li>
-      <li>Omatoimirasti Tenhola, 19.–21.9.</li>
-      <li>Yökuppi: Poutunkangas, 22.9.</li>
-      <li>Tiirinkoski 2025, 25.9.</li>
-      <li>Omatoimirastit Tiirinkoski, 26.–28.9.</li>
-      <li>Yökuppi Moreeni, 29.9.</li>
-      <li>Kolkanmäki 2023, 2.10.</li>
-      <li>Omatoimirastit Kolkanmäki, 3.–5.10.</li>
-      <li>Yökuppi: Palssarinkangas, 6.10.</li>
-      <li>Yökuppi Tiehaaranvuori 2024, 13.10.</li>
-      <li>Yökuppi Tiirinkoski 2025, 20.10.</li>
-    </ul>
-  </aside>
+  <table id="tulostaulukko">
+    <thead>
+      <tr>
+        <th class="static">Kokonaissijoitus</th>
+        <th class="static">Nimi</th>
+        <th class="static">Osallistumisia</th>
+        <th class="rotate"><div>23.3.</div></th>
+      </tr>
+    </thead>
+    <tbody id="tulosrivit"></tbody>
+  </table>
 
   <script>
-    async function haeJaNäytäTulokset() {
+    async function haeTulokset() {
       const vastaus = await fetch('Riksuntulokset.html');
       const teksti = await vastaus.text();
       const parseri = new DOMParser();
       const htmlDoc = parseri.parseFromString(teksti, 'text/html');
-      const container = document.getElementById('tulokset');
       const kaikkiRadat = htmlDoc.querySelectorAll('h3');
 
+      const osallistujat = new Map();
+
       kaikkiRadat.forEach((rata) => {
-        const rataNimi = rata.textContent.split(' ')[0] + ' ' + rata.textContent.split(' ')[1]; // esim. "Rata A"
+        const rataNimi = rata.textContent.trim();
         const pre = rata.nextElementSibling;
         if (!pre || pre.tagName !== 'PRE') return;
 
         const rivit = pre.textContent.trim().split('\n').slice(1); // ohita "lähti"-rivi
-        const taulukko = document.createElement('table');
-        const thead = document.createElement('thead');
-        thead.innerHTML = `
-          <tr>
-            <th>Kokonaissijoitus</th>
-            <th>Nimi</th>
-            <th>Osallistumisia</th>
-            <th>1. sijoja</th>
-            <th>2. sijoja</th>
-            <th>3. sijoja</th>
-            <th>4. sijoja</th>
-            <th>5. sijoja</th>
-            <th>6. sijoja</th>
-            <th>7. sijoja</th>
-            <th>8. sijoja</th>
-            <th>9. sijoja</th>
-            <th>10. sijoja</th>
-            <th>TOP 10 ulkopuolella</th>
-          </tr>`;
-        taulukko.appendChild(thead);
-        const tbody = document.createElement('tbody');
 
         rivit.forEach(rivi => {
           const match = rivi.match(/^ *(\d+)\.\s+(.+?)\s+(\d{1,2}\.\d{2}(?:\.\d{2})?)\s*(\+\d{1,2}\.\d{2})?$/);
           const eiAikaa = rivi.includes("ei aikaa");
 
+          let nimi, sijoitus;
           if (match) {
-            const [ , sija, nimi ] = match;
-            const sijoitusNum = parseInt(sija);
-            const sijoitukset = Array(10).fill(0);
-            let top10ulkopuolella = 0;
-
-            if (sijoitusNum >= 1 && sijoitusNum <= 10) {
-              sijoitukset[sijoitusNum - 1] = 1;
-            } else {
-              top10ulkopuolella = 1;
-            }
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td>${sija}</td>
-              <td>${nimi}</td>
-              <td>1</td>
-              ${sijoitukset.map(lkm => `<td>${lkm}</td>`).join('')}
-              <td>${top10ulkopuolella}</td>
-            `;
-            tbody.appendChild(tr);
-
+            sijoitus = parseInt(match[1]);
+            nimi = match[2].trim();
           } else if (eiAikaa) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td>-</td>
-              <td>${rivi.trim()}</td>
-              <td>1</td>
-              ${Array(10).fill('<td>0</td>').join('')}
-              <td>0</td>
-            `;
-            tbody.appendChild(tr);
+            sijoitus = 'x';
+            nimi = rivi.replace('ei aikaa', '').trim();
+          } else {
+            return;
           }
-        });
 
-        taulukko.appendChild(tbody);
-        const otsikko = document.createElement('h2');
-        otsikko.textContent = rataNimi;
-        container.appendChild(otsikko);
-        container.appendChild(taulukko);
+          if (!osallistujat.has(nimi)) {
+            osallistujat.set(nimi, {
+              nimi,
+              osallistumisia: 0,
+              sijoitukset: {}
+            });
+          }
+
+          const osallistuja = osallistujat.get(nimi);
+          osallistuja.osallistumisia++;
+          osallistuja.sijoitukset['23.3.'] = sijoitus;
+        });
+      });
+
+      const tbody = document.getElementById('tulosrivit');
+      let sijalaskuri = 1;
+      osallistujat.forEach(os => {
+        const tr = document.createElement('tr');
+        const sijoitus23 = os.sijoitukset['23.3.'] ?? 'x';
+        tr.innerHTML = `
+          <td>${sijalaskuri++}</td>
+          <td class="name">${os.nimi}</td>
+          <td>${os.osallistumisia}</td>
+          <td>${sijoitus23}</td>
+        `;
+        tbody.appendChild(tr);
       });
     }
 
-    haeJaNäytäTulokset();
+    haeTulokset();
   </script>
 </body>
 </html>
