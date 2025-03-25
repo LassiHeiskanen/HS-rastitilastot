@@ -54,6 +54,21 @@
     li {
       margin-bottom: 0.5rem;
     }
+    .footer {
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    color: #333;
+    }
+    .footer a {
+    color: #2a4d69;
+    text-decoration: none;
+    }
+    .footer a:hover {
+    text-decoration: underline;
+}
+
+
+    
   </style>
 </head>
 <body>
@@ -65,7 +80,6 @@
   </main>
 
   <aside>
-    <div class="counter" id="visit-counter">Tuloksia tarkasteltu 0 kertaa</div>
     
     <h2>Menneet tapahtumat</h2>
     <ul>
@@ -110,19 +124,19 @@
       <li>Yökuppi Tiehaaranvuori 2024, 13.10.</li>
       <li>Yökuppi Tiirinkoski 2025, 20.10.</li>
     </ul>
+    
+<!-- lisätään yhteystiedot -->
+      <div class="footer">
+      <p>Sivustoa ylläpitää<br>
+      <strong>Lassi Heiskanen</strong><br>
+      <a href="mailto:heiskanen.lassi@gmail.com">heiskanen.lassi@gmail.com</a></p>
+</div>
+
+    
   </aside>
 
   <script>
-    // Laskuri paikalliseen tallennukseen perustuen
-    function paivitaLaskuri() {
-      const counterKey = 'hsrastit-visit-count';
-      let count = parseInt(localStorage.getItem(counterKey) || '0', 10);
-      count += 1;
-      localStorage.setItem(counterKey, count);
-      document.getElementById('visit-counter').textContent = `Tuloksia tarkasteltu ${count} kertaa`;
-    }
-    paivitaLaskuri();
-
+   
     async function haeTulokset() {
       const vastaus = await fetch('Riksuntulokset.html');
       const teksti = await vastaus.text();
