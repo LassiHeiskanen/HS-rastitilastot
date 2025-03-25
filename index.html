@@ -12,11 +12,16 @@
     h1 {
       color: #2a4d69;
     }
+    h2 {
+      margin-top: 2rem;
+      color: #1e3c72;
+    }
     table {
       border-collapse: collapse;
       width: 100%;
       overflow-x: auto;
       display: block;
+      margin-bottom: 2rem;
     }
     th, td {
       border: 1px solid #ccc;
@@ -24,22 +29,7 @@
       text-align: center;
       min-width: 40px;
     }
-    th.rotate {
-      height: 120px;
-      white-space: nowrap;
-      vertical-align: bottom;
-      padding: 0;
-    }
-    th.rotate > div {
-      transform: rotate(-90deg);
-      transform-origin: bottom left;
-      white-space: nowrap;
-    }
     th.static {
-      vertical-align: middle;
-      background-color: #dbe9f4;
-    }
-    th.rotate, th.static {
       background-color: #dbe9f4;
     }
     td.name {
@@ -49,18 +39,9 @@
 </head>
 <body>
   <h1>HSRastit 2025 - Kilpailukohtaiset sijoitukset</h1>
+  <p>Tälle sivustolle rakennetaan tilastopalvelu, mikä kokoaa kaikkien HS-rastitapahtumien tuloksista yhteenvedon ja kokonaispistetilanteen.</p>
 
-  <table id="tulostaulukko">
-    <thead>
-      <tr>
-        <th class="static">Kokonaissijoitus</th>
-        <th class="static">Nimi</th>
-        <th class="static">Osallistumisia</th>
-        <th class="rotate"><div>23.3.</div></th>
-      </tr>
-    </thead>
-    <tbody id="tulosrivit"></tbody>
-  </table>
+  <div id="tulokset"></div>
 
   <script>
     async function haeTulokset() {
@@ -69,15 +50,15 @@
       const parseri = new DOMParser();
       const htmlDoc = parseri.parseFromString(teksti, 'text/html');
       const kaikkiRadat = htmlDoc.querySelectorAll('h3');
-
-      const osallistujat = new Map();
+      const container = document.getElementById('tulokset');
 
       kaikkiRadat.forEach((rata) => {
         const rataNimi = rata.textContent.trim();
         const pre = rata.nextElementSibling;
         if (!pre || pre.tagName !== 'PRE') return;
 
-        const rivit = pre.textContent.trim().split('\n').slice(1); // ohita "lähti"-rivi
+        const rivit = pre.textContent.trim().split('\n').slice(1);
+        const osallistujat = new Map();
 
         rivit.forEach(rivi => {
           const match = rivi.match(/^ *(\d+)\.\s+(.+?)\s+(\d{1,2}\.\d{2}(?:\.\d{2})?)\s*(\+\d{1,2}\.\d{2})?$/);
@@ -106,20 +87,38 @@
           osallistuja.osallistumisia++;
           osallistuja.sijoitukset['23.3.'] = sijoitus;
         });
-      });
 
-      const tbody = document.getElementById('tulosrivit');
-      let sijalaskuri = 1;
-      osallistujat.forEach(os => {
-        const tr = document.createElement('tr');
-        const sijoitus23 = os.sijoitukset['23.3.'] ?? 'x';
-        tr.innerHTML = `
-          <td>${sijalaskuri++}</td>
-          <td class="name">${os.nimi}</td>
-          <td>${os.osallistumisia}</td>
-          <td>${sijoitus23}</td>
-        `;
-        tbody.appendChild(tr);
+        const taulukko = document.createElement('table');
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+          <tr>
+            <th class="static">Kokonaissijoitus</th>
+            <th class="static">Nimi</th>
+            <th class="static">Osallistumisia</th>
+            <th class="static">23.3.</th>
+          </tr>`;
+        taulukko.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        let sijalaskuri = 1;
+        osallistujat.forEach(os => {
+          const tr = document.createElement('tr');
+          const sijoitus23 = os.sijoitukset['23.3.'] ?? 'x';
+          tr.innerHTML = `
+            <td>${sijalaskuri++}</td>
+            <td class="name">${os.nimi}</td>
+            <td>${os.osallistumisia}</td>
+            <td>${sijoitus23}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        taulukko.appendChild(tbody);
+
+        const otsikko = document.createElement('h2');
+        otsikko.textContent = rataNimi;
+        container.appendChild(otsikko);
+        container.appendChild(taulukko);
       });
     }
 
