@@ -29,11 +29,12 @@
       margin-top: 2rem;
       color: #1e3c72;
     }
+    .table-wrapper {
+      overflow-x: auto;
+    }
     table {
       border-collapse: collapse;
-      width: 100%;
-      overflow-x: auto;
-      display: block;
+      width: max-content;
       margin-bottom: 2rem;
     }
     th, td {
@@ -41,12 +42,30 @@
       padding: 4px;
       text-align: center;
       min-width: 40px;
+      background-color: white;
     }
-    th.static {
+    th.static, td.static {
+      position: sticky;
+      left: 0;
       background-color: #dbe9f4;
+      z-index: 1;
+    }
+    th.static:nth-child(2), td.name {
+      left: 100px;
+    }
+    th.static:nth-child(3), td.osallistumisia {
+      left: 200px;
     }
     td.name {
       text-align: left;
+      position: sticky;
+      background-color: #fff;
+      z-index: 1;
+    }
+    td.osallistumisia {
+      position: sticky;
+      background-color: #fff;
+      z-index: 1;
     }
     ul {
       padding-left: 1.2rem;
@@ -55,20 +74,17 @@
       margin-bottom: 0.5rem;
     }
     .footer {
-    margin-top: 2rem;
-    font-size: 0.85rem;
-    color: #333;
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: #333;
     }
     .footer a {
-    color: #2a4d69;
-    text-decoration: none;
+      color: #2a4d69;
+      text-decoration: none;
     }
     .footer a:hover {
-    text-decoration: underline;
-}
-
-
-    
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -80,7 +96,6 @@
   </main>
 
   <aside>
-    
     <h2>Menneet tapahtumat</h2>
     <ul>
       <li>Urheilupuisto-Keskusta, RiSu, 23.3.</li>
@@ -124,19 +139,15 @@
       <li>Yökuppi Tiehaaranvuori 2024, 13.10.</li>
       <li>Yökuppi Tiirinkoski 2025, 20.10.</li>
     </ul>
-    
-<!-- lisätään yhteystiedot -->
-      <div class="footer">
-      <p>Sivustoa ylläpitää<br>
+
+    <div class="footer">
+      <p>Sivustoa yläpitää<br>
       <strong>Lassi Heiskanen</strong><br>
       <a href="mailto:heiskanen.lassi@gmail.com">heiskanen.lassi@gmail.com</a></p>
-</div>
-
-    
+    </div>
   </aside>
 
   <script>
-   
     async function haeTulokset() {
       const vastaus = await fetch('Riksuntulokset.html');
       const teksti = await vastaus.text();
@@ -186,6 +197,9 @@
           osallistuja.sijoitukset['23.3.'] = sijoitus;
         });
 
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-wrapper';
+
         const taulukko = document.createElement('table');
         const thead = document.createElement('thead');
         let headerRow = `
@@ -195,7 +209,7 @@
             <th class="static">Osallistumisia</th>
         `;
         tapahtumapaivat.forEach(pvm => {
-          headerRow += `<th class="static">${pvm}</th>`;
+          headerRow += `<th>${pvm}</th>`;
         });
         headerRow += '</tr>';
         thead.innerHTML = headerRow;
@@ -205,7 +219,7 @@
         let sijalaskuri = 1;
         osallistujat.forEach(os => {
           const tr = document.createElement('tr');
-          let rivi = `<td>${sijalaskuri++}.</td><td class="name">${os.nimi}</td><td>${os.osallistumisia}</td>`;
+          let rivi = `<td class="static">${sijalaskuri++}.</td><td class="name">${os.nimi}</td><td class="osallistumisia">${os.osallistumisia}</td>`;
           tapahtumapaivat.forEach(pvm => {
             const s = os.sijoitukset[pvm];
             if (menneet.has(pvm)) {
@@ -223,7 +237,8 @@
         const otsikko = document.createElement('h2');
         otsikko.textContent = rataNimi;
         container.appendChild(otsikko);
-        container.appendChild(taulukko);
+        wrapper.appendChild(taulukko);
+        container.appendChild(wrapper);
       });
     }
 
