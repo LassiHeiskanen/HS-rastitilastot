@@ -113,6 +113,16 @@
   </aside>
 
   <script>
+    // Laskuri paikalliseen tallennukseen perustuen
+    function paivitaLaskuri() {
+      const counterKey = 'hsrastit-visit-count';
+      let count = parseInt(localStorage.getItem(counterKey) || '0', 10);
+      count += 1;
+      localStorage.setItem(counterKey, count);
+      document.getElementById('visit-counter').textContent = `Tuloksia tarkasteltu ${count} kertaa`;
+    }
+    paivitaLaskuri();
+
     async function haeTulokset() {
       const vastaus = await fetch('Riksuntulokset.html');
       const teksti = await vastaus.text();
