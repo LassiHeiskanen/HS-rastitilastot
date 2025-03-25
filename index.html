@@ -54,7 +54,7 @@
 
         if (!pre || pre.tagName !== 'PRE') return;
 
-        const rivit = pre.textContent.trim().split('\n').slice(1); // ohita "lähti"-rivi
+        const rivit = pre.textContent.trim().split('\n').slice(1); // ohita "(Lähti...)"-rivi
         const taulukko = document.createElement('table');
         const thead = document.createElement('thead');
         thead.innerHTML = '<tr><th>Sija</th><th>Nimi</th><th>Aika</th><th>Erotus</th></tr>';
@@ -63,7 +63,7 @@
         const tbody = document.createElement('tbody');
 
         rivit.forEach(rivi => {
-          const match = rivi.match(/^(\d+)\.\s+(.+?)\s+(\d{1,2}\.\d{2}(?:\.\d{2})?)\s*(\+\d{2}\.\d{2})?$/);
+          const match = rivi.match(/^ *(\d+)\.\s+(.+?)\s+(\d{1,2}\.\d{2}(?:\.\d{2})?)\s*(\+\d{1,2}\.\d{2})?$/);
           const eiAikaa = rivi.includes("ei aikaa");
 
           if (match) {
