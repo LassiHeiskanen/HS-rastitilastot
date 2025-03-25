@@ -65,8 +65,7 @@
   </main>
 
   <aside>
-    <div class="counter" id="visit-counter">Tuloksia tarkasteltu 0 kertaa</div>
-    
+      
     <h2>Menneet tapahtumat</h2>
     <ul>
       <li>Urheilupuisto-Keskusta, RiSu, 23.3.</li>
@@ -110,18 +109,16 @@
       <li>Yökuppi Tiehaaranvuori 2024, 13.10.</li>
       <li>Yökuppi Tiirinkoski 2025, 20.10.</li>
     </ul>
+      <ul>
+      <li>Sivustoa "ylläpitää"</li>
+      <li>Lassi Heiskanen</li>
+      <li>heiskanen.lassi@gmail.com</li>
+    </ul>
+      
+    </ul>
   </aside>
 
-  <script>
-    // Laskuri paikalliseen tallennukseen perustuen
-    function paivitaLaskuri() {
-      const counterKey = 'hsrastit-visit-count';
-      let count = parseInt(localStorage.getItem(counterKey) || '0', 10);
-      count += 1;
-      localStorage.setItem(counterKey, count);
-      document.getElementById('visit-counter').textContent = `Tuloksia tarkasteltu ${count} kertaa`;
-    }
-    paivitaLaskuri();
+  
 
     async function haeTulokset() {
       const vastaus = await fetch('Riksuntulokset.html');
