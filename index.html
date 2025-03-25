@@ -13,8 +13,9 @@
       gap: 2rem;
     }
     main {
-      flex: 3;
-    }
+  flex: 3;
+  min-width: 0;
+}
     aside {
       flex: 1;
       background: #eef4fa;
@@ -30,9 +31,10 @@
       color: #1e3c72;
     }
     .table-wrapper {
-      overflow-x: auto;
-      max-width: 50%;
-    }
+  overflow-x: auto;
+  max-width: 100%;
+  margin-right: 0;
+}
     table {
       border-collapse: collapse;
       width: max-content;
@@ -90,7 +92,7 @@
 </head>
 <body>
   <main>
-    <h1>HSRastit 2025 - Kilpailukohtaiset sijoitukset ver 0.9</h1>
+    <h1>HSRastit 2025 - Kilpailukohtaiset sijoitukset</h1>
     <p>Tälle sivustolle rakennetaan tilastopalvelu, mikä kokoaa kaikkien HS-rastitapahtumien tuloksista yhteenvedon ja kokonaispistetilanteen.</p>
     <p>Sivusto elää ja kehittyy niin kauan kuin tekoäly hengittää...</p>
     <div id="tulokset"></div>
