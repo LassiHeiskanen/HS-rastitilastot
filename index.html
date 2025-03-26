@@ -31,18 +31,22 @@
       margin-top: 2rem;
       color: #1e3c72;
     }
-    /* Taulukon wrapper: kapeampi ja rajattu korkeudeltaan (noin 15 riviä + otsikkorivi) */
+    /* Kunkin taulukon säilö, jossa sarjan nimi on erillään scrollattavasta alueesta */
+    .table-container {
+      margin-bottom: 2rem;
+    }
+    /* Scrollattava alue taulukolle: rajattu korkeus (noin 15 riviä + otsikkorivi) ja leveys */
     .table-wrapper {
       overflow: auto;
-      max-width: 800px; /* taulukko hieman kapeampi */
-      max-height: 480px; /* riittää noin 15 datariville */
+      max-width: 1000px;
+      max-height: 480px;
       border: 1px solid #ccc;
-      margin-bottom: 2rem;
       position: relative;
     }
     table {
       border-collapse: collapse;
-      width: max-content;
+      width: 100%;
+      table-layout: fixed;
     }
     th, td {
       border: 1px solid #ccc;
@@ -50,70 +54,87 @@
       text-align: center;
       background-color: white;
       height: 30px;
-      min-width: 40px;
+      white-space: nowrap;
     }
-    /* Yleinen sticky header: kaikissa thead-solussa */
+    /* Määritellään kiinteät leveydet sticky-sarakkeille */
+    /* 1. sarake */
+    thead th:nth-child(1), td:nth-child(1) {
+      width: 80px;
+    }
+    /* 2. sarake */
+    thead th:nth-child(2), td:nth-child(2) {
+      width: 200px;
+    }
+    /* 3. sarake */
+    thead th:nth-child(3), td:nth-child(3) {
+      width: 120px;
+    }
+    /* 4. sarake */
+    thead th:nth-child(4), td:nth-child(4) {
+      width: 100px;
+    }
+    /* Sticky-otsikkorivi */
     thead th {
       position: sticky;
       top: 0;
       background: white;
-      z-index: 2;
+      z-index: 5;
     }
-    /* Ensimmäisen sarakkeen sticky-ominaisuudet */
-    table td:nth-child(1) {
+    /* Sticky ensimmäinen sarake */
+    td:nth-child(1) {
       position: sticky;
       left: 0;
       background: white;
-      z-index: 1;
+      z-index: 4;
     }
     thead th:nth-child(1) {
       position: sticky;
-      top: 0;
       left: 0;
+      top: 0;
       background: white;
-      z-index: 3;
+      z-index: 6;
     }
-    /* Toisen sarakkeen sticky-ominaisuudet */
-    table td:nth-child(2) {
+    /* Sticky toinen sarake */
+    td:nth-child(2) {
       position: sticky;
-      left: 60px; /* ensimmäisen sarakkeen leveys */
+      left: 80px; /* 1. sarakkeen leveys */
       background: white;
-      z-index: 1;
+      z-index: 4;
     }
     thead th:nth-child(2) {
       position: sticky;
+      left: 80px;
       top: 0;
-      left: 60px;
       background: white;
-      z-index: 3;
+      z-index: 6;
     }
-    /* Kolmannen sarakkeen sticky-ominaisuudet */
-    table td:nth-child(3) {
+    /* Sticky kolmas sarake */
+    td:nth-child(3) {
       position: sticky;
-      left: 210px; /* 60 + 150 */
+      left: 280px; /* 80 + 200 */
       background: white;
-      z-index: 1;
+      z-index: 4;
     }
     thead th:nth-child(3) {
       position: sticky;
+      left: 280px;
       top: 0;
-      left: 210px;
       background: white;
-      z-index: 3;
+      z-index: 6;
     }
-    /* Neljännen sarakkeen sticky-ominaisuudet */
-    table td:nth-child(4) {
+    /* Sticky neljäs sarake */
+    td:nth-child(4) {
       position: sticky;
-      left: 310px; /* 60 + 150 + 100 */
+      left: 400px; /* 80 + 200 + 120 */
       background: white;
-      z-index: 1;
+      z-index: 4;
     }
     thead th:nth-child(4) {
       position: sticky;
+      left: 400px;
       top: 0;
-      left: 310px;
       background: white;
-      z-index: 3;
+      z-index: 6;
     }
     ul {
       padding-left: 1.2rem;
@@ -211,7 +232,6 @@
     const sarjat = ['Rata A', 'Rata B', 'Rata C', 'Rata D'];
     const tulokset = Object.fromEntries(sarjat.map(s => [s, new Map()]));
 
-    // Ladataan tulokset json-tiedostoista ja käsitellään pisteet
     async function haeTulokset() {
       for (const tapahtuma of tapahtumat) {
         if (!tapahtuma.tiedosto) continue;
@@ -236,7 +256,7 @@
         }
       }
 
-      // Näytetään tapahtumalistaukset oikeassa laidassa
+      // Näytetään tapahtumalistaukset
       const menneet = document.getElementById('menneet');
       const tulevat = document.getElementById('tulevat');
       tapahtumat.forEach(t => {
@@ -249,9 +269,16 @@
       const container = document.getElementById('tulokset');
       sarjat.forEach(sarja => {
         const data = Array.from(tulokset[sarja].values()).sort((a, b) => b.pisteet - a.pisteet);
+        const tableContainer = document.createElement('div');
+        tableContainer.className = 'table-container';
+        
+        // Sarjan nimi sijoitetaan konttina ulkopuolella scroll-aluetta
+        const otsikko = document.createElement('h2');
+        otsikko.textContent = sarja;
+        tableContainer.appendChild(otsikko);
+        
         const wrapper = document.createElement('div');
         wrapper.className = 'table-wrapper';
-
         const taulukko = document.createElement('table');
         const thead = document.createElement('thead');
         const header = ['Kokonaissijoitus', 'Nimi', 'Osallistumisia', 'Pisteet', ...tapahtumat.map(t => t.pvm)];
@@ -275,11 +302,9 @@
           tbody.appendChild(tr);
         });
         taulukko.appendChild(tbody);
-        const otsikko = document.createElement('h2');
-        otsikko.textContent = sarja;
-        wrapper.appendChild(otsikko);
         wrapper.appendChild(taulukko);
-        container.appendChild(wrapper);
+        tableContainer.appendChild(wrapper);
+        container.appendChild(tableContainer);
       });
     }
 
