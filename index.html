@@ -5,7 +5,7 @@
   <link rel="icon" href="Logo.png" type="image/png">
   <title>HSRastit 2025 - Tilastopalvelu</title>
   <style>
-    /* Perustyylit tietokoneelle */
+    /* --- Peruslayout tietokoneella --- */
     body {
       font-family: sans-serif;
       padding: 2rem;
@@ -13,33 +13,36 @@
       display: flex;
       flex-direction: row;
       gap: 2rem;
+      margin: 0;
     }
     main {
       flex: 3;
       min-width: 0;
     }
-    aside {
+    /* Kalenteripaneeli, ID:nä calendarPanel */
+    #calendarPanel {
       flex: 1;
       background: #eef4fa;
       padding: 1rem;
       border-radius: 8px;
       border: 1px solid #ccc;
     }
+
     h1 {
       color: #2a4d69;
+      margin-top: 0;
     }
     h2 {
       margin-top: 2rem;
       color: #1e3c72;
     }
-    /* Taulukon sticky- ja scroll-ominaisuudet */
-    .table-container {
-      margin-bottom: 2rem;
-    }
+
+    /* Taulukkotyyli (sama kuin ennen, lyhennettynä) */
+    .table-container { margin-bottom: 2rem; }
     .table-wrapper {
       overflow: auto;
-      max-width: 1200px;  /* Säädä leveyttä tarpeen mukaan */
-      max-height: 480px;  /* Näkyviin noin 15 riviä */
+      max-width: 1200px;
+      max-height: 480px;
       border: 1px solid #ccc;
       position: relative;
     }
@@ -55,92 +58,39 @@
       height: 30px;
       white-space: nowrap;
     }
-    /* Kiinteät leveydet ja sticky-ominaisuudet ensimmäisille sarakkeille */
-    /* 1. sarake: "Sija" */
-    thead th:nth-child(1),
-    tbody td:nth-child(1) {
-      width: 60px;
-    }
-    /* 2. sarake: "Nimi" */
-    thead th:nth-child(2),
-    tbody td:nth-child(2) {
-      width: 200px;
-    }
-    /* 3. sarake: "kisat" */
-    thead th:nth-child(3),
-    tbody td:nth-child(3) {
-      width: 80px;
-    }
-    /* 4. sarake: "Pisteet" */
-    thead th:nth-child(4),
-    tbody td:nth-child(4) {
-      width: 100px;
-    }
-    /* Sticky-ylärivi */
+    /* Ensimmäiset sarakkeet: leveydet + sticky */
+    thead th:nth-child(1), tbody td:nth-child(1) { width: 60px; }
+    thead th:nth-child(2), tbody td:nth-child(2) { width: 200px; }
+    thead th:nth-child(3), tbody td:nth-child(3) { width: 80px; }
+    thead th:nth-child(4), tbody td:nth-child(4) { width: 100px; }
     thead th {
-      position: sticky;
-      top: 0;
-      background: white;
-      z-index: 10;
+      position: sticky; top: 0; background: white; z-index: 10;
     }
-    /* Sticky-sarakkeet */
-    /* Sarake 1 */
     tbody td:nth-child(1) {
-      position: sticky;
-      left: 0;
-      z-index: 5;
-      background: white;
+      position: sticky; left: 0; z-index: 5; background: white;
     }
     thead th:nth-child(1) {
-      position: sticky;
-      left: 0;
-      top: 0;
-      z-index: 11;
-      background: white;
+      position: sticky; left: 0; top: 0; z-index: 11; background: white;
     }
-    /* Sarake 2 */
     tbody td:nth-child(2) {
-      position: sticky;
-      left: 60px; /* 1. sarakkeen leveys */
-      z-index: 5;
-      background: white;
+      position: sticky; left: 60px; z-index: 5; background: white;
     }
     thead th:nth-child(2) {
-      position: sticky;
-      left: 60px;
-      top: 0;
-      z-index: 11;
-      background: white;
+      position: sticky; left: 60px; top: 0; z-index: 11; background: white;
     }
-    /* Sarake 3 */
     tbody td:nth-child(3) {
-      position: sticky;
-      left: 260px; /* 60 + 200 */
-      z-index: 5;
-      background: white;
+      position: sticky; left: 260px; z-index: 5; background: white;
     }
     thead th:nth-child(3) {
-      position: sticky;
-      left: 260px;
-      top: 0;
-      z-index: 11;
-      background: white;
+      position: sticky; left: 260px; top: 0; z-index: 11; background: white;
     }
-    /* Sarake 4 */
     tbody td:nth-child(4) {
-      position: sticky;
-      left: 340px; /* 60 + 200 + 80 */
-      z-index: 5;
-      background: white;
+      position: sticky; left: 340px; z-index: 5; background: white;
     }
     thead th:nth-child(4) {
-      position: sticky;
-      left: 340px;
-      top: 0;
-      z-index: 11;
-      background: white;
+      position: sticky; left: 340px; top: 0; z-index: 11; background: white;
     }
-    /* Muut tyylit */
+
     ul {
       padding-left: 1.2rem;
     }
@@ -159,23 +109,25 @@
     .footer a:hover {
       text-decoration: underline;
     }
-    /* Mobiililaitteiden tyylit */
+
+    /* --- Mobiililaitteiden tyylit (max-width 768px) --- */
     @media (max-width: 768px) {
       body {
         flex-direction: column;
         padding: 1rem;
       }
-      main, aside {
+      main, #calendarPanel {
         width: 100%;
       }
       /* Piilotetaan kalenteri oletuksena */
-      aside {
+      #calendarPanel {
         display: none;
       }
-      aside.active {
+      /* Näkyy kun on .active-luokka */
+      #calendarPanel.active {
         display: block;
       }
-      /* Kalenterin togglauspainike */
+      /* Painike, josta kalenterin saa näkyviin/piiloon */
       #toggleCalendar {
         position: fixed;
         top: 50%;
@@ -187,13 +139,10 @@
         border: none;
         border-radius: 4px 0 0 4px;
         z-index: 1000;
+        cursor: pointer;
       }
-      h1 {
-        font-size: 1.5rem;
-      }
-      h2 {
-        font-size: 1.2rem;
-      }
+      h1 { font-size: 1.5rem; }
+      h2 { font-size: 1.2rem; }
     }
   </style>
 </head>
@@ -208,7 +157,8 @@
     <div id="tulokset"></div>
   </main>
 
-  <aside>
+  <!-- HUOM: annetaan aside:lle ID="calendarPanel" -->
+  <aside id="calendarPanel">
     <h1>Kisakalenteri</h1>
     <h2>Menneet tapahtumat</h2>
     <ul id="menneet"></ul>
@@ -227,7 +177,7 @@
   <button id="toggleCalendar">Kalenteri</button>
 
   <script>
-    // Lista tapahtumista
+    // Tapahtumat
     const tapahtumat = [
       { nimi: "Urheilupuisto-Keskusta, RiSu", pvm: "23.3.", tiedosto: "23032025.json" },
       { nimi: "Ahvenisto 2023", pvm: "16.4.", tiedosto: "16042025.json" },
@@ -265,6 +215,7 @@
       { nimi: "Yökuppi: Palssarinkangas", pvm: "6.10.", tiedosto: null },
       { nimi: "Yökuppi Tiehaaranvuori 2024", pvm: "13.10.", tiedosto: null },
       { nimi: "Yökuppi Tiirinkoski 2025", pvm: "20.10.", tiedosto: null }
+      // ... Loput tapahtumat
     ];
 
     const pistetaulukko = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
@@ -279,10 +230,7 @@
           const data = await res.json();
           for (const sarja in data) {
             data[sarja].forEach((nimi, index) => {
-              const cleanNimi = nimi
-                .replace(/^\d+\.\s*/, '')
-                .replace(/\s+\d.*$/, '')
-                .trim();
+              const cleanNimi = nimi.replace(/^\d+\.\s*/, '').replace(/\s+\d.*$/, '').trim();
               if (!tulokset[sarja].has(cleanNimi)) {
                 tulokset[sarja].set(cleanNimi, {
                   nimi: cleanNimi,
@@ -303,7 +251,7 @@
         }
       }
 
-      // Näytetään tapahtumalistaukset
+      // Täytetään kalenterin listat
       const menneet = document.getElementById('menneet');
       const tulevat = document.getElementById('tulevat');
       tapahtumat.forEach(t => {
@@ -312,14 +260,14 @@
         (t.tiedosto ? menneet : tulevat).appendChild(li);
       });
 
-      // Luodaan sarjataulukot jokaiselle radalle
+      // Luodaan sarjataulukot
       const container = document.getElementById('tulokset');
       sarjat.forEach(sarja => {
         const data = Array.from(tulokset[sarja].values()).sort((a, b) => b.pisteet - a.pisteet);
         const tableContainer = document.createElement('div');
         tableContainer.className = 'table-container';
 
-        // Sarjan otsikko
+        // Otsikko
         const otsikko = document.createElement('h2');
         otsikko.textContent = sarja;
         tableContainer.appendChild(otsikko);
@@ -330,9 +278,9 @@
         const taulukko = document.createElement('table');
         const thead = document.createElement('thead');
         const trHead = document.createElement('tr');
-
-        // Vaihdetaan otsikot: 1. sarake "Sija", 3. "kisat"
+        // 1. sarake = "Sija", 3. sarake = "kisat"
         const header = ['Sija', 'Nimi', 'kisat', 'Pisteet', ...tapahtumat.map(t => t.pvm)];
+
         header.forEach(h => {
           const th = document.createElement('th');
           th.textContent = h;
@@ -367,9 +315,10 @@
 
     haeTulokset();
 
-    // Mobiilipainikkeen togglaus kalenterin näyttämiseksi/piilottamiseksi
+    // Mobiilipainikkeen toiminta
     document.getElementById("toggleCalendar").addEventListener("click", function() {
-      var asideEl = document.querySelector("aside");
+      // Haetaan aside ID:n perusteella
+      const asideEl = document.getElementById("calendarPanel");
       asideEl.classList.toggle("active");
     });
   </script>
