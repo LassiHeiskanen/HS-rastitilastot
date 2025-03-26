@@ -32,37 +32,46 @@
     }
     .table-wrapper {
       overflow-x: auto;
-      overflow-y: auto;
-      max-width: 95%;
-      max-height: 500px;
+      max-width: 100%;
+      margin-bottom: 2rem;
     }
     table {
       border-collapse: collapse;
       width: max-content;
-      margin-bottom: 2rem;
     }
     th, td {
       border: 1px solid #ccc;
       padding: 4px;
       text-align: center;
-      min-width: 40px;
+      min-width: 50px;
       background-color: white;
     }
     th {
       position: sticky;
       top: 0;
       background-color: #e5efff;
-      z-index: 2;
+      z-index: 3;
     }
     td.sticky, th.sticky {
       position: sticky;
-      left: 0;
       background-color: #f1f1f1;
-      z-index: 1;
+      z-index: 2;
     }
-    td.sticky-1, th.sticky-1 { left: 40px; }
-    td.sticky-2, th.sticky-2 { left: 80px; }
-    td.sticky-3, th.sticky-3 { left: 120px; }
+    th.sticky-0, td.sticky-0 { left: 0; }
+    th.sticky-1, td.sticky-1 { left: 60px; }
+    th.sticky-2, td.sticky-2 { left: 160px; }
+    th.sticky-3, td.sticky-3 { left: 260px; }
+
+    tbody {
+      display: block;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    thead, tbody tr {
+      display: table;
+      width: max-content;
+      table-layout: fixed;
+    }
 
     ul {
       padding-left: 1.2rem;
@@ -109,7 +118,14 @@
     const tapahtumat = [
       { nimi: "Urheilupuisto-Keskusta, RiSu", pvm: "23.3.", tiedosto: "23032025.json" },
       { nimi: "Ahvenisto 2023", pvm: "16.4.", tiedosto: "16042025.json" },
-      { nimi: "Monikkala/2024", pvm: "24.4.", tiedosto: "24042025.json" }
+      { nimi: "Monikkala/2024", pvm: "24.4.", tiedosto: "24042025.json" },
+      { nimi: "Vipukorpi 2024", pvm: "1.5.", tiedosto: null },
+      { nimi: "Moreeni / 2023", pvm: "8.5.", tiedosto: null },
+      { nimi: "Konttila 2024", pvm: "15.5.", tiedosto: null },
+      { nimi: "Evo", pvm: "22.5.", tiedosto: null },
+      { nimi: "Aulanko, ulkoilumaja / 2024", pvm: "29.5.", tiedosto: null },
+      { nimi: "Hiidenkorpi / 2023", pvm: "5.6.", tiedosto: null },
+      { nimi: "Evo", pvm: "12.6.", tiedosto: null }
     ];
 
     const pistetaulukko = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
@@ -170,7 +186,7 @@
         const tbody = document.createElement('tbody');
         data.forEach((os, i) => {
           const tr = document.createElement('tr');
-          const td = [ `${i + 1}.`, os.nimi, os.osallistumisia, os.pisteet ];
+          const td = [`${i + 1}.`, os.nimi, os.osallistumisia, os.pisteet];
           tapahtumat.forEach(t => {
             td.push(os.sijoitukset[t.pvm] ? os.sijoitukset[t.pvm] + '.' : '');
           });
