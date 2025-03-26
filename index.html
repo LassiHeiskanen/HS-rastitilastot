@@ -2,8 +2,10 @@
 <html lang="fi">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="Logo.png" type="image/png">
   <title>HSRastit 2025 - Tilastopalvelu</title>
   <style>
+    /* Perustyylit tietokoneelle */
     body {
       font-family: sans-serif;
       padding: 2rem;
@@ -30,20 +32,20 @@
       margin-top: 2rem;
       color: #1e3c72;
     }
+    /* Taulukon sticky- ja scroll-ominaisuudet */
     .table-container {
       margin-bottom: 2rem;
     }
-    /* Scrollattava alue taulukolle */
     .table-wrapper {
-      overflow: auto;          
-      max-width: 1200px;       /* Säädä leveyttä tarpeen mukaan */
-      max-height: 480px;       /* Säädä korkeutta, jotta taulukossa näkyy ~15 riviä */
+      overflow: auto;
+      max-width: 1200px;  /* Säädä leveyttä tarpeen mukaan */
+      max-height: 480px;  /* Näkyviin noin 15 riviä */
       border: 1px solid #ccc;
       position: relative;
     }
     table {
       border-collapse: collapse;
-      width: max-content;      /* Sallii taulukon venyä sisällön mukaan */
+      width: max-content;
     }
     th, td {
       border: 1px solid #ccc;
@@ -51,39 +53,38 @@
       text-align: center;
       background-color: white;
       height: 30px;
-      white-space: nowrap;     /* Estää tekstin rivittymisen */
+      white-space: nowrap;
     }
-    /* --- Leveyksien määritykset neljälle ensimmäiselle sarakkeelle --- */
-    /* 1. sarake (Sija) */
+    /* Kiinteät leveydet ja sticky-ominaisuudet ensimmäisille sarakkeille */
+    /* 1. sarake: "Sija" */
     thead th:nth-child(1),
     tbody td:nth-child(1) {
       width: 60px;
     }
-    /* 2. sarake (Nimi) */
+    /* 2. sarake: "Nimi" */
     thead th:nth-child(2),
     tbody td:nth-child(2) {
       width: 200px;
     }
-    /* 3. sarake (kisat) */
+    /* 3. sarake: "kisat" */
     thead th:nth-child(3),
     tbody td:nth-child(3) {
       width: 80px;
     }
-    /* 4. sarake (Pisteet) */
+    /* 4. sarake: "Pisteet" */
     thead th:nth-child(4),
     tbody td:nth-child(4) {
       width: 100px;
     }
-
-    /* --- Sticky-ylärivi (thead) --- */
+    /* Sticky-ylärivi */
     thead th {
       position: sticky;
       top: 0;
       background: white;
       z-index: 10;
     }
-    /* --- Sticky-sarakkeet (1–4) tbody:ssä --- */
-    /* Sarake 1 (Sija) */
+    /* Sticky-sarakkeet */
+    /* Sarake 1 */
     tbody td:nth-child(1) {
       position: sticky;
       left: 0;
@@ -92,26 +93,26 @@
     }
     thead th:nth-child(1) {
       position: sticky;
-      top: 0;
       left: 0;
+      top: 0;
       z-index: 11;
       background: white;
     }
-    /* Sarake 2 (Nimi) */
+    /* Sarake 2 */
     tbody td:nth-child(2) {
       position: sticky;
-      left: 60px; /* Sarake 1:n leveys */
+      left: 60px; /* 1. sarakkeen leveys */
       z-index: 5;
       background: white;
     }
     thead th:nth-child(2) {
       position: sticky;
-      top: 0;
       left: 60px;
+      top: 0;
       z-index: 11;
       background: white;
     }
-    /* Sarake 3 (kisat) */
+    /* Sarake 3 */
     tbody td:nth-child(3) {
       position: sticky;
       left: 260px; /* 60 + 200 */
@@ -120,12 +121,12 @@
     }
     thead th:nth-child(3) {
       position: sticky;
-      top: 0;
       left: 260px;
+      top: 0;
       z-index: 11;
       background: white;
     }
-    /* Sarake 4 (Pisteet) */
+    /* Sarake 4 */
     tbody td:nth-child(4) {
       position: sticky;
       left: 340px; /* 60 + 200 + 80 */
@@ -134,13 +135,12 @@
     }
     thead th:nth-child(4) {
       position: sticky;
-      top: 0;
       left: 340px;
+      top: 0;
       z-index: 11;
       background: white;
     }
-
-    /* Muita tyylejä */
+    /* Muut tyylit */
     ul {
       padding-left: 1.2rem;
     }
@@ -159,12 +159,47 @@
     .footer a:hover {
       text-decoration: underline;
     }
+    /* Mobiililaitteiden tyylit */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        padding: 1rem;
+      }
+      main, aside {
+        width: 100%;
+      }
+      /* Piilotetaan kalenteri oletuksena */
+      aside {
+        display: none;
+      }
+      aside.active {
+        display: block;
+      }
+      /* Kalenterin togglauspainike */
+      #toggleCalendar {
+        position: fixed;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        padding: 0.5rem 1rem;
+        background-color: #2a4d69;
+        color: white;
+        border: none;
+        border-radius: 4px 0 0 4px;
+        z-index: 1000;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      h2 {
+        font-size: 1.2rem;
+      }
+    }
   </style>
 </head>
 <body>
   <main>
     <h1>HSRastit 2025 - Pistekooste</h1>
-     
     <p>
       Tällä sivustolla ylläpidetään leikkimielisesti epävirallista Hämeenlinnan Seudun kuntorastien pistetilannetta.<br>
       Pisteitä kuntorasteilta saa seuraavasti:<br>
@@ -177,18 +212,19 @@
     <h1>Kisakalenteri</h1>
     <h2>Menneet tapahtumat</h2>
     <ul id="menneet"></ul>
-
     <h2>Tulevat tapahtumat</h2>
     <ul id="tulevat"></ul>
-
     <div class="footer">
-      <img src="Logo.png" alt="Takaperän Ponnistus" width="200" /><br><br>
+      <img src="Logo.png" alt="Takaperän Ponnistus" width="200"><br><br>
       <p>Sivustoa ylläpitää<br>
-      <strong>Takaperän Ponnistus</strong><br><br>
-      <a href="https://hsrastit.info/hsrastit-2025/">Hämeenlinnan Seudun kuntorastit</a>
+         <strong>Takaperän Ponnistus</strong><br><br>
+         <a href="https://hsrastit.info/hsrastit-2025/">Hämeenlinnan Seudun kuntorastit</a>
       </p>
     </div>
   </aside>
+
+  <!-- Mobiilipainike kalenterin näyttämiseen/piilottamiseen -->
+  <button id="toggleCalendar">Kalenteri</button>
 
   <script>
     // Lista tapahtumista
@@ -229,9 +265,6 @@
       { nimi: "Yökuppi: Palssarinkangas", pvm: "6.10.", tiedosto: null },
       { nimi: "Yökuppi Tiehaaranvuori 2024", pvm: "13.10.", tiedosto: null },
       { nimi: "Yökuppi Tiirinkoski 2025", pvm: "20.10.", tiedosto: null }
-
-      // ...
-      // Lisää omat tapahtumasi
     ];
 
     const pistetaulukko = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
@@ -246,7 +279,6 @@
           const data = await res.json();
           for (const sarja in data) {
             data[sarja].forEach((nimi, index) => {
-              // Poistetaan mahdolliset sijoitusnumerot nimen edestä
               const cleanNimi = nimi
                 .replace(/^\d+\.\s*/, '')
                 .replace(/\s+\d.*$/, '')
@@ -299,9 +331,8 @@
         const thead = document.createElement('thead');
         const trHead = document.createElement('tr');
 
-        // Vaihdetaan 1. ja 3. otsikot halutuiksi
+        // Vaihdetaan otsikot: 1. sarake "Sija", 3. "kisat"
         const header = ['Sija', 'Nimi', 'kisat', 'Pisteet', ...tapahtumat.map(t => t.pvm)];
-
         header.forEach(h => {
           const th = document.createElement('th');
           th.textContent = h;
@@ -313,7 +344,6 @@
         const tbody = document.createElement('tbody');
         data.forEach((os, i) => {
           const tr = document.createElement('tr');
-          // 1. sarake = Sija, 2. = Nimi, 3. = kisat (osallistumisia), 4. = Pisteet
           const rivinSolut = [
             (i + 1) + '.', 
             os.nimi, 
@@ -336,6 +366,12 @@
     }
 
     haeTulokset();
+
+    // Mobiilipainikkeen togglaus kalenterin näyttämiseksi/piilottamiseksi
+    document.getElementById("toggleCalendar").addEventListener("click", function() {
+      var asideEl = document.querySelector("aside");
+      asideEl.classList.toggle("active");
+    });
   </script>
 </body>
 </html>
