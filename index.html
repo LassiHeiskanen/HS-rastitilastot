@@ -144,10 +144,10 @@
             rata = rivi.trim();
             if (!tulokset[rata]) tulokset[rata] = new Map();
           } else if (rivi.trim()) {
-            const match = rivi.match(/^\d+\.\s+(.*)$/);
-            if (match) {
-              const nimi = match[1].trim();
-              const sijoitus = rivit.indexOf(rivi) + 1;
+            const sijoitusMatch = rivi.match(/^(\d+)\.\s+(.*)$/);
+            if (sijoitusMatch) {
+              const sijoitus = parseInt(sijoitusMatch[1]);
+              const nimi = sijoitusMatch[2].trim();
               const pisteet = sijoitus <= pistetaulukko.length ? pistetaulukko[sijoitus - 1] : 1;
               if (!tulokset[rata].has(nimi)) {
                 tulokset[rata].set(nimi, {
@@ -207,7 +207,7 @@
       }
     }
 
-    haeTulokset();
+    window.addEventListener('DOMContentLoaded', haeTulokset);
   </script>
 </body>
 </html>
