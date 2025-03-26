@@ -95,7 +95,6 @@
     <h1>HSRastit 2025 - Kilpailukohtaiset sijoitukset</h1>
     <p>Tälle sivustolle rakennetaan tilastopalvelu, mikä kokoaa kaikkien HS-rastitapahtumien tuloksista yhteenvedon ja kokonaispistetilanteen.</p>
     <p>Sivusto elää ja kehittyy niin kauan kuin tekoäly hengittää...</p>
-
     <div id="taulukot"></div>
   </main>
 
@@ -126,10 +125,10 @@
   </aside>
 
   <script>
-    // Tässä vaiheessa luodaan tyhjät taulukot JavaScriptillä, täyttö tapahtuu myöhemmin .txt-tiedostoista käsin.
     const paivat = ['23.3.', '16.4.', '24.4.', '1.5.', '8.5.', '15.5.', '22.5.', '29.5.', '5.6.', '12.6.', '24.6.', '26.6.', '1.7.', '3.7.', '8.7.', '10.7.', '15.7.', '17.7.', '22.7.', '24.7.', '31.7.', '7.8.', '14.8.', '21.8.', '28.8.', '4.9.', '11.9.', '15.9.', '18.9.', '22.9.', '25.9.', '29.9.', '2.10.', '6.10.', '13.10.', '20.10.'];
     const radat = ['Rata A', 'Rata B', 'Rata C', 'Rata D'];
 
+    const taulukot = {};
     const container = document.getElementById('taulukot');
 
     radat.forEach(rata => {
@@ -157,7 +156,61 @@
 
       wrapper.appendChild(table);
       container.appendChild(wrapper);
+      taulukot[rata] = tbody;
     });
+
+    async function haeTulokset() {
+      const tiedostot = ['23032025.txt', '16042025.txt'];
+      const osallistujat = {
+        'Rata A': {}, 'Rata B': {}, 'Rata C': {}, 'Rata D': {}
+      };
+
+      for (const tiedosto of tiedostot) {
+        const vastaus = await fetch(tiedosto);
+        const teksti = await vastaus.text();
+        const paiva = tiedosto.slice(0, 2) + '.' + tiedosto.slice(2, 4) + '.';
+
+        const rivit = teksti.split('\n');
+        let rata = '';
+
+        for (const rivi of rivit) {
+          const rtrim = rivi.trim();
+          if (rtrim.startsWith('Rata')) {
+            rata = rtrim.split(' ')[0] + ' ' + rtrim.split(' ')[1];
+            continue;
+          }
+          const match = rtrim.match(/^(\d+)\.\s+(.*?)\s+(\d{1,2}\.\d{2}(\.\d{2})?)?/);
+          if (match) {
+            const sijoitus = parseInt(match[1]);
+            const nimi = match[2].trim();
+            const data = osallistujat[rata][nimi] || { nimi, osallistumisia: 0, sijoitukset: {} };
+            data.osallistumisia++;
+            data.sijoitukset[paiva] = sijoitus;
+            osallistujat[rata][nimi] = data;
+          }
+        }
+      }
+
+      radat.forEach(rata => {
+        const osallistujalista = Object.values(osallistujat[rata]);
+        osallistujalista.sort((a, b) => {
+          const a1 = a.sijoitukset;
+          const b1 = b.sijoitukset;
+          const sijoitukset = paivat.map(p => a1[p] ?? 999).reduce((a, b) => a + b, 0) -
+                               paivat.map(p => b1[p] ?? 999).reduce((a, b) => a + b, 0);
+          return sijoitukset;
+        });
+
+        osallistujalista.forEach((os, idx) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td class="static">${idx + 1}.</td><td class="name">${os.nimi}</td><td class="osallistumisia">${os.osallistumisia}</td>` +
+            paivat.map(p => `<td>${os.sijoitukset[p] ? os.sijoitukset[p] + '.' : ''}</td>`).join('');
+          taulukot[rata].appendChild(tr);
+        });
+      });
+    }
+
+    haeTulokset();
   </script>
 </body>
 </html>
