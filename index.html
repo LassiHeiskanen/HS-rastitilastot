@@ -92,7 +92,7 @@
 <body>
   <main>
     <h1>HSRastit 2025 - Kilpailukohtaiset sijoitukset</h1>
-    <p>Tälle sivustolle rakennetaan tilastopalvelu, mikä kokoaa kaikkien HS-rastitapahtumien tuloksista yhteenvedon ja kokonaispistetilanteen.</p>
+    <p>Tälle sivustolle rakennetaan tilastopalvelu, mikä kokoaa kaikkien HS-rastitapahtumien tuloksista yhteenvedon ja kokonaissijoitustilanteen.</p>
     <p>Sivusto elää ja kehittyy niin kauan kuin tekoäly hengittää...</p>
     <div id="tulokset"></div>
   </main>
@@ -144,10 +144,13 @@
             rata = rivi;
             if (!radat[rata]) radat[rata] = [];
           } else if (rivi.trim() && rata) {
-            const [sijoitus, ...nimiParts] = rivi.split(/\s+/);
-            const nimi = nimiParts.join(' ').trim();
-            const paivamaara = tiedosto.substring(0, 2) + '.' + tiedosto.substring(2, 4) + '.';
-            radat[rata].push({ nimi, sijoitus: parseInt(sijoitus), paivamaara });
+            const match = rivi.match(/^(\d+)\.\s+([\wäöå]+)\s+([\wäöå]+)/);
+            if (match) {
+              const sijoitus = parseInt(match[1]);
+              const nimi = match[2] + ' ' + match[3];
+              const paivamaara = tiedosto.substring(0, 2) + '.' + tiedosto.substring(2, 4) + '.';
+              radat[rata].push({ nimi, sijoitus, paivamaara });
+            }
           }
         });
       }
