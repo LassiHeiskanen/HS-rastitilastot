@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>HSRastit 2025 - Tilastopalvelu</title>
   <style>
     body {
@@ -33,7 +33,6 @@
     .table-wrapper {
       overflow-x: auto;
       max-width: 100%;
-      margin-right: 0;
     }
     table {
       border-collapse: collapse;
@@ -95,15 +94,16 @@
     <h1>HSRastit 2025 - Kilpailukohtaiset sijoitukset</h1>
     <p>Tälle sivustolle rakennetaan tilastopalvelu, mikä kokoaa kaikkien HS-rastitapahtumien tuloksista yhteenvedon ja kokonaispistetilanteen.</p>
     <p>Sivusto elää ja kehittyy niin kauan kuin tekoäly hengittää...</p>
-    <div id="taulukot"></div>
+    <div id="tulokset"></div>
   </main>
 
   <aside>
     <h2>Menneet tapahtumat</h2>
-    <ul id="menneet-tapahtumat">
+    <ul>
       <li>Urheilupuisto-Keskusta, RiSu, 23.3.</li>
       <li>Ahvenisto 2023, 16.4.</li>
     </ul>
+
     <h2>Tulevat tapahtumat</h2>
     <ul>
       <li>Monikkala/2024, 24.4.</li>
@@ -115,8 +115,9 @@
       <li>Hiidenkorpi / 2023, 5.6.</li>
       <li>Evo, 12.6.</li>
       <li>Pyyttämö 2023, 24.6.</li>
-      <li>... (jatkuu tapahtumalistauksen mukaan)</li>
+      <li>Poutunkangas, 26.6.</li>
     </ul>
+
     <div class="footer">
       <p>Sivustoa ylläpitää<br>
       <strong>Lassi Heiskanen</strong><br>
@@ -125,91 +126,89 @@
   </aside>
 
   <script>
-    const paivat = ['23.3.', '16.4.', '24.4.', '1.5.', '8.5.', '15.5.', '22.5.', '29.5.', '5.6.', '12.6.', '24.6.', '26.6.', '1.7.', '3.7.', '8.7.', '10.7.', '15.7.', '17.7.', '22.7.', '24.7.', '31.7.', '7.8.', '14.8.', '21.8.', '28.8.', '4.9.', '11.9.', '15.9.', '18.9.', '22.9.', '25.9.', '29.9.', '2.10.', '6.10.', '13.10.', '20.10.'];
-    const radat = ['Rata A', 'Rata B', 'Rata C', 'Rata D'];
-
-    const taulukot = {};
-    const container = document.getElementById('taulukot');
-
-    radat.forEach(rata => {
-      const otsikko = document.createElement('h2');
-      otsikko.textContent = rata;
-      container.appendChild(otsikko);
-
-      const wrapper = document.createElement('div');
-      wrapper.className = 'table-wrapper';
-
-      const table = document.createElement('table');
-      const thead = document.createElement('thead');
-      const tr = document.createElement('tr');
-      ['Kokonaissijoitus', 'Nimi', 'Osallistumisia', ...paivat].forEach((ots, i) => {
-        const th = document.createElement('th');
-        th.textContent = ots;
-        if (i < 3) th.className = 'static';
-        tr.appendChild(th);
-      });
-      thead.appendChild(tr);
-      table.appendChild(thead);
-
-      const tbody = document.createElement('tbody');
-      table.appendChild(tbody);
-
-      wrapper.appendChild(table);
-      container.appendChild(wrapper);
-      taulukot[rata] = tbody;
-    });
+    const tapahtumapaivat = ['23.3.', '16.4.', '24.4.', '1.5.', '8.5.', '15.5.', '22.5.', '29.5.', '5.6.', '12.6.', '24.6.', '26.6.', '1.7.', '3.7.', '8.7.', '10.7.', '15.7.', '17.7.', '22.7.', '24.7.', '31.7.', '7.8.', '14.8.', '21.8.', '28.8.', '4.9.', '11.9.', '15.9.', '18.9.', '22.9.', '25.9.', '29.9.', '2.10.', '6.10.', '13.10.', '20.10.'];
+    const menneet = ['23.3.', '16.4.'];
 
     async function haeTulokset() {
       const tiedostot = ['23032025.txt', '16042025.txt'];
-      const osallistujat = {
-        'Rata A': {}, 'Rata B': {}, 'Rata C': {}, 'Rata D': {}
-      };
+      const radat = {};
 
       for (const tiedosto of tiedostot) {
         const vastaus = await fetch(tiedosto);
         const teksti = await vastaus.text();
-        const paiva = tiedosto.slice(0, 2) + '.' + tiedosto.slice(2, 4) + '.';
-
-        const rivit = teksti.split('\n');
+        const rivit = teksti.trim().split('\n');
         let rata = '';
 
-        for (const rivi of rivit) {
-          const rtrim = rivi.trim();
-          if (rtrim.startsWith('Rata')) {
-            rata = rtrim.split(' ')[0] + ' ' + rtrim.split(' ')[1];
-            continue;
+        rivit.forEach(rivi => {
+          if (rivi.startsWith('Rata')) {
+            rata = rivi;
+            if (!radat[rata]) radat[rata] = [];
+          } else if (rivi.trim() && rata) {
+            const [sijoitus, nimi] = rivi.split(/[.]\s+/, 2);
+            const paivamaara = tiedosto.substring(0, 2) + '.' + tiedosto.substring(2, 4) + '.';
+            radat[rata].push({ nimi: nimi.trim(), sijoitus: parseInt(sijoitus), paivamaara });
           }
-          const match = rtrim.match(/^(\d+)\.\s+(.*?)\s+(\d{1,2}\.\d{2}(\.\d{2})?)?/);
-          if (match) {
-            const sijoitus = parseInt(match[1]);
-            const nimi = match[2].trim();
-            const data = osallistujat[rata][nimi] || { nimi, osallistumisia: 0, sijoitukset: {} };
-            data.osallistumisia++;
-            data.sijoitukset[paiva] = sijoitus;
-            osallistujat[rata][nimi] = data;
-          }
-        }
+        });
       }
 
-      radat.forEach(rata => {
-        const osallistujalista = Object.values(osallistujat[rata]);
-        osallistujalista.sort((a, b) => {
-          const aSum = paivat.map(p => a.sijoitukset[p] ?? 999).reduce((acc, cur) => acc + cur, 0);
-          const bSum = paivat.map(p => b.sijoitukset[p] ?? 999).reduce((acc, cur) => acc + cur, 0);
-          return aSum - bSum;
+      for (const rata in radat) {
+        const osallistujat = new Map();
+
+        radat[rata].forEach(({ nimi, sijoitus, paivamaara }) => {
+          if (!osallistujat.has(nimi)) {
+            osallistujat.set(nimi, { nimi, osallistumisia: 0, sijoitukset: {} });
+          }
+          const os = osallistujat.get(nimi);
+          os.sijoitukset[paivamaara] = sijoitus;
+          os.osallistumisia++;
         });
 
-        osallistujalista.forEach((os, idx) => {
-          const tr = document.createElement('tr');
-          const cells = [`<td class="static">${idx + 1}.</td>`, `<td class="name">${os.nimi}</td>`, `<td class="osallistumisia">${os.osallistumisia}</td>`];
-          paivat.forEach(p => {
-            const val = os.sijoitukset[p];
-            cells.push(`<td>${val ? val + '.' : val === 0 ? '' : 'x'}</td>`);
-          });
-          tr.innerHTML = cells.join('');
-          taulukot[rata].appendChild(tr);
+        const jarjestetty = Array.from(osallistujat.values()).sort((a, b) => {
+          for (let s = 1; s <= 10; s++) {
+            const aCount = Object.values(a.sijoitukset).filter(x => x === s).length;
+            const bCount = Object.values(b.sijoitukset).filter(x => x === s).length;
+            if (bCount !== aCount) return bCount - aCount;
+          }
+          return a.nimi.localeCompare(b.nimi);
         });
-      });
+
+        const container = document.getElementById('tulokset');
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-wrapper';
+        const taulukko = document.createElement('table');
+
+        let header = `<thead><tr>
+          <th class="static">Kokonaissijoitus</th>
+          <th class="static">Nimi</th>
+          <th class="static">Osallistumisia</th>`;
+        tapahtumapaivat.forEach(pvm => {
+          header += `<th>${pvm}</th>`;
+        });
+        header += '</tr></thead>';
+        taulukko.innerHTML = header;
+
+        const tbody = document.createElement('tbody');
+        jarjestetty.forEach((os, idx) => {
+          const tr = document.createElement('tr');
+          let rivi = `<td class="static">${idx + 1}.</td><td class="name">${os.nimi}</td><td class="osallistumisia">${os.osallistumisia}</td>`;
+          tapahtumapaivat.forEach(pvm => {
+            if (menneet.includes(pvm)) {
+              rivi += `<td>${os.sijoitukset[pvm] ? os.sijoitukset[pvm] + '.' : 'x'}</td>`;
+            } else {
+              rivi += '<td></td>';
+            }
+          });
+          tr.innerHTML = rivi;
+          tbody.appendChild(tr);
+        });
+
+        taulukko.appendChild(tbody);
+        const otsikko = document.createElement('h2');
+        otsikko.textContent = rata;
+        wrapper.appendChild(otsikko);
+        wrapper.appendChild(taulukko);
+        container.appendChild(wrapper);
+      }
     }
 
     haeTulokset();
