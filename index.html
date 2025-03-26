@@ -152,7 +152,7 @@
 
   <script>
     async function haeTulokset() {
-      const vastaus = await fetch('Riksuntulokset_yhdistetty.html');
+      const vastaus = await fetch('YhdistetytTulokset_23_3_16_4.html');
       const teksti = await vastaus.text();
       const parseri = new DOMParser();
       const htmlDoc = parseri.parseFromString(teksti, 'text/html');
