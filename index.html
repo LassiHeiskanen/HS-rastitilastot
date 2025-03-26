@@ -35,7 +35,7 @@
     }
     /* Scrollattava alue taulukolle */
     .table-wrapper {
-      overflow: auto;          /* Mahdollistaa sekä vaaka- että pystysuuntaisen vierityksen */
+      overflow: auto;          
       max-width: 1200px;       /* Säädä leveyttä tarpeen mukaan */
       max-height: 480px;       /* Säädä korkeutta, jotta taulukossa näkyy ~15 riviä */
       border: 1px solid #ccc;
@@ -54,22 +54,22 @@
       white-space: nowrap;     /* Estää tekstin rivittymisen */
     }
     /* --- Leveyksien määritykset neljälle ensimmäiselle sarakkeelle --- */
-    /* 1. sarake (esim. sijoitus) */
+    /* 1. sarake (Sija) */
     thead th:nth-child(1),
     tbody td:nth-child(1) {
-      width: 80px;
+      width: 60px;
     }
-    /* 2. sarake (esim. nimi) */
+    /* 2. sarake (Nimi) */
     thead th:nth-child(2),
     tbody td:nth-child(2) {
       width: 200px;
     }
-    /* 3. sarake (osallistumisia) */
+    /* 3. sarake (kisat) */
     thead th:nth-child(3),
     tbody td:nth-child(3) {
-      width: 120px;
+      width: 80px;
     }
-    /* 4. sarake (pisteet) */
+    /* 4. sarake (Pisteet) */
     thead th:nth-child(4),
     tbody td:nth-child(4) {
       width: 100px;
@@ -83,7 +83,7 @@
       z-index: 10;
     }
     /* --- Sticky-sarakkeet (1–4) tbody:ssä --- */
-    /* Sarake 1 */
+    /* Sarake 1 (Sija) */
     tbody td:nth-child(1) {
       position: sticky;
       left: 0;
@@ -94,53 +94,53 @@
       position: sticky;
       top: 0;
       left: 0;
-      z-index: 11; /* isompi kuin tbody-solujen */
+      z-index: 11;
       background: white;
     }
-    /* Sarake 2 */
+    /* Sarake 2 (Nimi) */
     tbody td:nth-child(2) {
       position: sticky;
-      left: 80px; /* Sarake 1:n leveys */
+      left: 60px; /* Sarake 1:n leveys */
       z-index: 5;
       background: white;
     }
     thead th:nth-child(2) {
       position: sticky;
       top: 0;
-      left: 80px;
+      left: 60px;
       z-index: 11;
       background: white;
     }
-    /* Sarake 3 */
+    /* Sarake 3 (kisat) */
     tbody td:nth-child(3) {
       position: sticky;
-      left: 280px; /* 80 + 200 */
+      left: 260px; /* 60 + 200 */
       z-index: 5;
       background: white;
     }
     thead th:nth-child(3) {
       position: sticky;
       top: 0;
-      left: 280px;
+      left: 260px;
       z-index: 11;
       background: white;
     }
-    /* Sarake 4 */
+    /* Sarake 4 (Pisteet) */
     tbody td:nth-child(4) {
       position: sticky;
-      left: 400px; /* 80 + 200 + 120 */
+      left: 340px; /* 60 + 200 + 80 */
       z-index: 5;
       background: white;
     }
     thead th:nth-child(4) {
       position: sticky;
       top: 0;
-      left: 400px;
+      left: 340px;
       z-index: 11;
       background: white;
     }
 
-    /* Yms. tyylit */
+    /* Muita tyylejä */
     ul {
       padding-left: 1.2rem;
     }
@@ -166,11 +166,9 @@
     <h1>HSRastit 2025 - Pistekooste</h1>
      
     <p>
-      Tällä sivustolla ylläpidetään leikkimielisesti epävirallista Hämeenlinnan Seudun kuntorastien pistetilannetta<br><br>
-      Näet alta HSRastit 2025 -tapahtumien pistetilanteen. Pisteitä kuntorasteilta saa seuraavasti:<br>
-      Voittajalle 15, seuraavalle 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, muut 1 piste, hylätty 0 pistettä.<br><br>
-      Huomaa: Mikäli nimesi on kirjoitettu eri tapahtumissa eri tavoin, sinusta muodostuu useampi kilpailija.<br>
-      (Sivustolla ilmenee vielä bugeja, syytämme siitä tekoälyä)
+      Tällä sivustolla ylläpidetään leikkimielisesti epävirallista Hämeenlinnan Seudun kuntorastien pistetilannetta.<br>
+      Pisteitä kuntorasteilta saa seuraavasti:<br>
+      Voittajalle 15, seuraavalle 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, muut 1 piste, hylätty 0 pistettä.
     </p>
     <div id="tulokset"></div>
   </main>
@@ -186,53 +184,20 @@
     <div class="footer">
       <img src="Logo.png" alt="Takaperän Ponnistus" width="200" /><br><br>
       <p>Sivustoa ylläpitää<br>
-      <strong>Takaperän Ponnistus</strong><br><br><br><br><br>
+      <strong>Takaperän Ponnistus</strong><br><br>
       <a href="https://hsrastit.info/hsrastit-2025/">Hämeenlinnan Seudun kuntorastit</a>
       </p>
     </div>
   </aside>
 
   <script>
-    // Lista kaikista tapahtumista, osa jo pidetty, osa tulossa
+    // Lista tapahtumista
     const tapahtumat = [
       { nimi: "Urheilupuisto-Keskusta, RiSu", pvm: "23.3.", tiedosto: "23032025.json" },
       { nimi: "Ahvenisto 2023", pvm: "16.4.", tiedosto: "16042025.json" },
       { nimi: "Monikkala/2024", pvm: "24.4.", tiedosto: "24042025.json" },
-      { nimi: "Vipukorpi 2024", pvm: "1.5.", tiedosto: null },
-      { nimi: "Moreeni / 2023", pvm: "8.5.", tiedosto: null },
-      { nimi: "Konttila 2024", pvm: "15.5.", tiedosto: null },
-      { nimi: "Evo", pvm: "22.5.", tiedosto: null },
-      { nimi: "Aulanko, ulkoilumaja / 2024", pvm: "29.5.", tiedosto: null },
-      { nimi: "Hiidenkorpi / 2023", pvm: "5.6.", tiedosto: null },
-      { nimi: "Evo", pvm: "12.6.", tiedosto: null },
-      { nimi: "Pyyttämö 2023", pvm: "24.6.", tiedosto: null },
-      { nimi: "Poutunkangas", pvm: "26.6.", tiedosto: null },
-      { nimi: "Taulamaa 2023", pvm: "1.7.", tiedosto: null },
-      { nimi: "Kuusisenkallio / 2023", pvm: "3.7.", tiedosto: null },
-      { nimi: "Akkijärvi", pvm: "8.7.", tiedosto: null },
-      { nimi: "Kukonnokka/2024", pvm: "10.7.", tiedosto: null },
-      { nimi: "Kiipula 2024", pvm: "15.7.", tiedosto: null },
-      { nimi: "Hankala", pvm: "17.7.", tiedosto: null },
-      { nimi: "Vuortenkylä /2023", pvm: "22.7.", tiedosto: null },
-      { nimi: "Ahvenisto 2023", pvm: "24.7.", tiedosto: null },
-      { nimi: "Pekola", pvm: "31.7.", tiedosto: null },
-      { nimi: "Ilamo / 2024", pvm: "7.8.", tiedosto: null },
-      { nimi: "Vehkosuo", pvm: "14.8.", tiedosto: null },
-      { nimi: "Korpi-Lauri", pvm: "21.8.", tiedosto: null },
-      { nimi: "Takaperä", pvm: "28.8.", tiedosto: null },
-      { nimi: "Syrjäntausta", pvm: "4.9.", tiedosto: null },
-      { nimi: "Kulomäki/2025", pvm: "11.9.", tiedosto: null },
-      { nimi: "Yökuppi Hyrvälä", pvm: "15.9.", tiedosto: null },
-      { nimi: "Tenhola / 2022", pvm: "18.9.", tiedosto: null },
-      { nimi: "Yökuppi: Poutunkangas", pvm: "22.9.", tiedosto: null },
-      { nimi: "Tiirinkoski 2025", pvm: "25.9.", tiedosto: null },
-      { nimi: "Yökuppi Moreeni", pvm: "29.9.", tiedosto: null },
-      { nimi: "Kolkanmäki 2023", pvm: "2.10.", tiedosto: null },
-      { nimi: "Yökuppi: Palssarinkangas", pvm: "6.10.", tiedosto: null },
-      { nimi: "Yökuppi Tiehaaranvuori 2024", pvm: "13.10.", tiedosto: null },
-      { nimi: "Yökuppi Tiirinkoski 2025", pvm: "20.10.", tiedosto: null }
       // ...
-      // Lisää loput tapahtumat
+      // Lisää omat tapahtumasi
     ];
 
     const pistetaulukko = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
@@ -247,9 +212,18 @@
           const data = await res.json();
           for (const sarja in data) {
             data[sarja].forEach((nimi, index) => {
-              const cleanNimi = nimi.replace(/^\d+\.\s*/, '').replace(/\s+\d.*$/, '').trim();
+              // Poistetaan mahdolliset sijoitusnumerot nimen edestä
+              const cleanNimi = nimi
+                .replace(/^\d+\.\s*/, '')
+                .replace(/\s+\d.*$/, '')
+                .trim();
               if (!tulokset[sarja].has(cleanNimi)) {
-                tulokset[sarja].set(cleanNimi, { nimi: cleanNimi, osallistumisia: 0, pisteet: 0, sijoitukset: {} });
+                tulokset[sarja].set(cleanNimi, {
+                  nimi: cleanNimi,
+                  osallistumisia: 0,
+                  pisteet: 0,
+                  sijoitukset: {}
+                });
               }
               const henkilo = tulokset[sarja].get(cleanNimi);
               henkilo.osallistumisia++;
@@ -259,7 +233,7 @@
             });
           }
         } catch (e) {
-          console.warn(`Tiedoston ${tapahtuma.tiedosto} lataus epäonnistui.`);
+          console.warn(`Tiedoston ${tapahtuma.tiedosto} lataus epäonnistui: `, e);
         }
       }
 
@@ -279,7 +253,7 @@
         const tableContainer = document.createElement('div');
         tableContainer.className = 'table-container';
 
-        // Sarjan otsikko erillisenä
+        // Sarjan otsikko
         const otsikko = document.createElement('h2');
         otsikko.textContent = sarja;
         tableContainer.appendChild(otsikko);
@@ -290,7 +264,9 @@
         const taulukko = document.createElement('table');
         const thead = document.createElement('thead');
         const trHead = document.createElement('tr');
-        const header = ['Kokonaissijoitus', 'Nimi', 'Osallistumisia', 'Pisteet', ...tapahtumat.map(t => t.pvm)];
+
+        // Vaihdetaan 1. ja 3. otsikot halutuiksi
+        const header = ['Sija', 'Nimi', 'kisat', 'Pisteet', ...tapahtumat.map(t => t.pvm)];
 
         header.forEach(h => {
           const th = document.createElement('th');
@@ -303,6 +279,7 @@
         const tbody = document.createElement('tbody');
         data.forEach((os, i) => {
           const tr = document.createElement('tr');
+          // 1. sarake = Sija, 2. = Nimi, 3. = kisat (osallistumisia), 4. = Pisteet
           const rivinSolut = [
             (i + 1) + '.', 
             os.nimi, 
