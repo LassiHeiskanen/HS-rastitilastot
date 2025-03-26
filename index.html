@@ -138,17 +138,17 @@
         const teksti = await vastaus.text();
         const rivit = teksti.trim().split('\n');
         let rata = '';
+        const paivamaara = tiedosto.substring(0, 2) + '.' + tiedosto.substring(2, 4) + '.';
 
         rivit.forEach(rivi => {
           if (rivi.startsWith('Rata')) {
             rata = rivi;
             if (!radat[rata]) radat[rata] = [];
           } else if (rivi.trim() && rata) {
-            const match = rivi.match(/^(\d+)\.\s+([\wäöå]+)\s+([\wäöå]+)/);
+            const match = rivi.match(/^(\d+)\.\s+(.*?)\s+(\d{1,2}\.\d{2}(?:\.\d{2})?)?/);
             if (match) {
               const sijoitus = parseInt(match[1]);
-              const nimi = match[2] + ' ' + match[3];
-              const paivamaara = tiedosto.substring(0, 2) + '.' + tiedosto.substring(2, 4) + '.';
+              const nimi = match[2];
               radat[rata].push({ nimi, sijoitus, paivamaara });
             }
           }
