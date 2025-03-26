@@ -49,44 +49,71 @@
       padding: 4px;
       text-align: center;
       background-color: white;
-      height: 30px;  /* kiinteä rivikorkeus */
+      height: 30px;
       min-width: 40px;
     }
-    /* Jäädytetyt ylärivit */
+    /* Yleinen sticky header: kaikissa thead-solussa */
     thead th {
       position: sticky;
       top: 0;
       background: white;
-      z-index: 5;
+      z-index: 2;
     }
-    /* Jäädytetyt ensimmäiset neljä saraketta */
-    table th:nth-child(1), table td:nth-child(1) {
+    /* Ensimmäisen sarakkeen sticky-ominaisuudet */
+    table td:nth-child(1) {
       position: sticky;
       left: 0;
       background: white;
-      z-index: 4;
-      width: 60px;
+      z-index: 1;
     }
-    table th:nth-child(2), table td:nth-child(2) {
+    thead th:nth-child(1) {
       position: sticky;
+      top: 0;
+      left: 0;
+      background: white;
+      z-index: 3;
+    }
+    /* Toisen sarakkeen sticky-ominaisuudet */
+    table td:nth-child(2) {
+      position: sticky;
+      left: 60px; /* ensimmäisen sarakkeen leveys */
+      background: white;
+      z-index: 1;
+    }
+    thead th:nth-child(2) {
+      position: sticky;
+      top: 0;
       left: 60px;
       background: white;
-      z-index: 4;
-      width: 150px;
+      z-index: 3;
     }
-    table th:nth-child(3), table td:nth-child(3) {
+    /* Kolmannen sarakkeen sticky-ominaisuudet */
+    table td:nth-child(3) {
       position: sticky;
       left: 210px; /* 60 + 150 */
       background: white;
-      z-index: 4;
-      width: 100px;
+      z-index: 1;
     }
-    table th:nth-child(4), table td:nth-child(4) {
+    thead th:nth-child(3) {
+      position: sticky;
+      top: 0;
+      left: 210px;
+      background: white;
+      z-index: 3;
+    }
+    /* Neljännen sarakkeen sticky-ominaisuudet */
+    table td:nth-child(4) {
       position: sticky;
       left: 310px; /* 60 + 150 + 100 */
       background: white;
-      z-index: 4;
-      width: 80px;
+      z-index: 1;
+    }
+    thead th:nth-child(4) {
+      position: sticky;
+      top: 0;
+      left: 310px;
+      background: white;
+      z-index: 3;
     }
     ul {
       padding-left: 1.2rem;
@@ -113,7 +140,6 @@
     <h1>HSRastit 2025 - Pistekooste</h1>
      
     <p>
-      <!-- Selitetään pisteytys -->
       Tällä sivustolla ylläpidetään leikkimielisesti epävirallista Hämeenlinnan Seudun kuntorastien pistetilannetta<br><br>
       Näet alta HSRastit 2025 -tapahtumien pistetilanteen. Pisteitä kuntorasteilta saa seuraavasti:<br>
       Voittajalle 15, seuraavalle 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, muut 1 piste, hylätty 0 pistettä.<br><br>
