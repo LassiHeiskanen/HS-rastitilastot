@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <link rel="icon" href="Logo.png" type="image/png" />
   <title>HSRastit 2025 - Tilastopalvelu</title>
   <style>
     body {
@@ -31,47 +32,37 @@
       color: #1e3c72;
     }
     .table-wrapper {
-      overflow-x: auto;
+      overflow: auto;
+      max-height: 500px;
       max-width: 100%;
-      margin-bottom: 2rem;
     }
     table {
       border-collapse: collapse;
       width: max-content;
+      margin-bottom: 2rem;
     }
     th, td {
       border: 1px solid #ccc;
       padding: 4px;
       text-align: center;
-      min-width: 50px;
+      min-width: 40px;
       background-color: white;
     }
     th {
       position: sticky;
       top: 0;
       background-color: #e5efff;
-      z-index: 3;
-    }
-    td.sticky, th.sticky {
-      position: sticky;
-      background-color: #f1f1f1;
       z-index: 2;
     }
-    th.sticky-0, td.sticky-0 { left: 0; }
-    th.sticky-1, td.sticky-1 { left: 60px; }
-    th.sticky-2, td.sticky-2 { left: 160px; }
-    th.sticky-3, td.sticky-3 { left: 260px; }
-
-    tbody {
-      display: block;
-      max-height: 600px;
-      overflow-y: auto;
+    th.sticky, td.sticky {
+      position: sticky;
+      left: 0;
+      background-color: #f9f9f9;
+      z-index: 1;
     }
-    thead, tbody tr {
-      display: table;
-      width: max-content;
-      table-layout: fixed;
-    }
+    td.sticky-1, th.sticky-1 { left: 60px; }
+    td.sticky-2, th.sticky-2 { left: 120px; }
+    td.sticky-3, th.sticky-3 { left: 180px; }
 
     ul {
       padding-left: 1.2rem;
@@ -96,11 +87,18 @@
 <body>
   <main>
     <h1>HSRastit 2025 - Pistekooste</h1>
-    <p>Näet alta HSRastit 2025 -tapahtumien pistetilanteen. Pisteitä saa seuraavasti: 15, 14, 13, ..., 2, muut 1 piste, hylätty 0 pistettä.</p>
+    <p><!-- Selitetään pisteytys -->
+      Tällä sivustolla ylläpidetään leikkimielisesti epävirallista Hämeenlinnan Seudun kuntorastien pistetilannetta<br><br>
+      Näet alta HSRastit 2025 -tapahtumien pistetilanteen. Pisteitä kuntorasteilta saa seuraavasti:<br>
+      Voittajalle 15, seuraavalle 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, muut 1 piste, hylätty 0 pistettä.<br><br>
+      Huomaa: Mikäli nimesi on kirjoitettu eri tapahtumissa eri tavoin, sinusta muodostuu useampi kilpailija.<br>
+      (Sivustolla ilmenee vielä bugeja, syytämme siitä tekoälyä)
+    </p>
     <div id="tulokset"></div>
   </main>
 
   <aside>
+    <h1>Kisakalenteri</h1>
     <h2>Menneet tapahtumat</h2>
     <ul id="menneet"></ul>
 
@@ -108,9 +106,11 @@
     <ul id="tulevat"></ul>
 
     <div class="footer">
+      <img src="Logo.png" alt="Takaperän Ponnistus" width="200" /><br><br>
       <p>Sivustoa ylläpitää<br>
-      <strong>Lassi Heiskanen</strong><br>
-      <a href="mailto:heiskanen.lassi@gmail.com">heiskanen.lassi@gmail.com</a></p>
+      <strong>Takaperän Ponnistus</strong><br><br><br><br><br>
+      <a href="https://hsrastit.info/hsrastit-2025/">Hämeenlinnan Seudun kuntorastit</a>
+      </p>
     </div>
   </aside>
 
@@ -123,13 +123,13 @@
       { nimi: "Moreeni / 2023", pvm: "8.5.", tiedosto: null },
       { nimi: "Konttila 2024", pvm: "15.5.", tiedosto: null },
       { nimi: "Evo", pvm: "22.5.", tiedosto: null },
-      { nimi: "Aulanko, ulkoilumaja / 2024", pvm: "29.5.", tiedosto: null },
+      { nimi: "Aulanko / 2024", pvm: "29.5.", tiedosto: null },
       { nimi: "Hiidenkorpi / 2023", pvm: "5.6.", tiedosto: null },
-      { nimi: "Evo", pvm: "12.6.", tiedosto: null }
+      { nimi: "Evo", pvm: "12.6.", tiedosto: null },
     ];
 
-    const pistetaulukko = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
-    const sarjat = ['Rata A', 'Rata B', 'Rata C', 'Rata D', 'Rata D1', 'Rata D2', 'Rata X'];
+    const pistetaulukko = [15,14,13,12,11,10,9,8,7,6,5,4,3,2];
+    const sarjat = ['Rata A', 'Rata B', 'Rata C', 'Rata D'];
     const tulokset = Object.fromEntries(sarjat.map(r => [r, new Map()]));
 
     async function haeTulokset() {
@@ -140,7 +140,7 @@
           const data = await res.json();
           for (const sarja in data) {
             data[sarja].forEach((nimi, index) => {
-              const cleanNimi = nimi.replace(/^[0-9]+\.\s+/, '').replace(/\s+\+.*$/, '').replace(/\d+:\d+$/, '').trim();
+              const cleanNimi = nimi.replace(/^[0-9]+\.\s+/, '').replace(/\s+\+.*$/, '').replace(/[0-9:.]+$/, '').trim();
               if (!tulokset[sarja].has(cleanNimi)) {
                 tulokset[sarja].set(cleanNimi, { nimi: cleanNimi, osallistumisia: 0, pisteet: 0, sijoitukset: {} });
               }
@@ -156,6 +156,7 @@
         }
       }
 
+      // Kalenterit
       const menneet = document.getElementById('menneet');
       const tulevat = document.getElementById('tulevat');
       tapahtumat.forEach(t => {
@@ -164,41 +165,44 @@
         (t.tiedosto ? menneet : tulevat).appendChild(li);
       });
 
+      // Tulostaulukot
       const container = document.getElementById('tulokset');
       sarjat.forEach(sarja => {
         const data = Array.from(tulokset[sarja].values()).sort((a, b) => b.pisteet - a.pisteet);
         const wrapper = document.createElement('div');
         wrapper.className = 'table-wrapper';
 
-        const taulukko = document.createElement('table');
+        const table = document.createElement('table');
         const thead = document.createElement('thead');
         const header = ['Kokonaissijoitus', 'Nimi', 'Osallistumisia', 'Pisteet', ...tapahtumat.map(t => t.pvm)];
-        const trHead = document.createElement('tr');
-        header.forEach((h, i) => {
+        const trh = document.createElement('tr');
+        header.forEach((h, idx) => {
           const th = document.createElement('th');
           th.textContent = h;
-          if (i < 4) th.classList.add('sticky', `sticky-${i}`);
-          trHead.appendChild(th);
+          if (idx < 4) th.className = `sticky sticky-${idx}`;
+          trh.appendChild(th);
         });
-        thead.appendChild(trHead);
-        taulukko.appendChild(thead);
+        thead.appendChild(trh);
+        table.appendChild(thead);
 
         const tbody = document.createElement('tbody');
         data.forEach((os, i) => {
           const tr = document.createElement('tr');
-          const td = [`${i + 1}.`, os.nimi, os.osallistumisia, os.pisteet];
+          const cells = [`${i+1}.`, os.nimi, os.osallistumisia, os.pisteet];
           tapahtumat.forEach(t => {
-            td.push(os.sijoitukset[t.pvm] ? os.sijoitukset[t.pvm] + '.' : '');
+            cells.push(os.sijoitukset[t.pvm] ? os.sijoitukset[t.pvm] + '.' : '');
           });
-          tr.innerHTML = td.map((s, i) => `<td class="${i < 4 ? 'sticky sticky-' + i : ''}">${s}</td>`).join('');
+          cells.forEach((val, idx) => {
+            const td = document.createElement('td');
+            td.textContent = val;
+            if (idx < 4) td.className = `sticky sticky-${idx}`;
+            tr.appendChild(td);
+          });
           tbody.appendChild(tr);
         });
-
-        taulukko.appendChild(tbody);
-        const otsikko = document.createElement('h2');
-        otsikko.textContent = sarja;
-        wrapper.appendChild(otsikko);
-        wrapper.appendChild(taulukko);
+        table.appendChild(tbody);
+        wrapper.appendChild(document.createElement('h2')).textContent = sarja;
+        wrapper.appendChild(table);
         container.appendChild(wrapper);
       });
     }
