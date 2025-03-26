@@ -194,17 +194,19 @@
       radat.forEach(rata => {
         const osallistujalista = Object.values(osallistujat[rata]);
         osallistujalista.sort((a, b) => {
-          const a1 = a.sijoitukset;
-          const b1 = b.sijoitukset;
-          const sijoitukset = paivat.map(p => a1[p] ?? 999).reduce((a, b) => a + b, 0) -
-                               paivat.map(p => b1[p] ?? 999).reduce((a, b) => a + b, 0);
-          return sijoitukset;
+          const aSum = paivat.map(p => a.sijoitukset[p] ?? 999).reduce((acc, cur) => acc + cur, 0);
+          const bSum = paivat.map(p => b.sijoitukset[p] ?? 999).reduce((acc, cur) => acc + cur, 0);
+          return aSum - bSum;
         });
 
         osallistujalista.forEach((os, idx) => {
           const tr = document.createElement('tr');
-          tr.innerHTML = `<td class="static">${idx + 1}.</td><td class="name">${os.nimi}</td><td class="osallistumisia">${os.osallistumisia}</td>` +
-            paivat.map(p => `<td>${os.sijoitukset[p] ? os.sijoitukset[p] + '.' : ''}</td>`).join('');
+          const cells = [`<td class="static">${idx + 1}.</td>`, `<td class="name">${os.nimi}</td>`, `<td class="osallistumisia">${os.osallistumisia}</td>`];
+          paivat.forEach(p => {
+            const val = os.sijoitukset[p];
+            cells.push(`<td>${val ? val + '.' : val === 0 ? '' : 'x'}</td>`);
+          });
+          tr.innerHTML = cells.join('');
           taulukot[rata].appendChild(tr);
         });
       });
