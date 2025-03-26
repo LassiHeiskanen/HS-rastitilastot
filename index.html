@@ -46,29 +46,6 @@
       min-width: 40px;
       background-color: white;
     }
-    th.static, td.static {
-      position: sticky;
-      left: 0;
-      background-color: #dbe9f4;
-      z-index: 1;
-    }
-    th.static:nth-child(2), td.name {
-      left: 100px;
-    }
-    th.static:nth-child(3), td.osallistumisia {
-      left: 200px;
-    }
-    td.name {
-      text-align: left;
-      position: sticky;
-      background-color: #fff;
-      z-index: 1;
-    }
-    td.osallistumisia {
-      position: sticky;
-      background-color: #fff;
-      z-index: 1;
-    }
     ul {
       padding-left: 1.2rem;
     }
@@ -105,6 +82,7 @@
 
     <h2>Tulevat tapahtumat</h2>
     <ul>
+      <li>Ahvenisto 2023, 16.4.</li>
       <li>Monikkala/2024, 24.4.</li>
       <li>Vipukorpi 2024, 1.5.</li>
       <li>Moreeni / 2023, 8.5.</li>
@@ -115,6 +93,30 @@
       <li>Evo, 12.6.</li>
       <li>Pyyttämö 2023, 24.6.</li>
       <li>Poutunkangas, 26.6.</li>
+      <li>Taulamaa 2023, 1.7.</li>
+      <li>Kuusisenkallio / 2023, 3.7.</li>
+      <li>Akkijärvi, 8.7.</li>
+      <li>Kukonnokka/2024, 10.7.</li>
+      <li>Kiipula 2024, 15.7.</li>
+      <li>Hankala, 17.7.</li>
+      <li>Vuortenkylä /2023, 22.7.</li>
+      <li>Ahvenisto 2023, 24.7.</li>
+      <li>Pekola, 31.7.</li>
+      <li>Ilamo / 2024, 7.8.</li>
+      <li>Vehkosuo, 14.8.</li>
+      <li>Korpi-Lauri, 21.8.</li>
+      <li>Takaperä, 28.8.</li>
+      <li>Syrjäntausta, 4.9.</li>
+      <li>Kulomäki/2025, 11.9.</li>
+      <li>Yökuppi Hyrvälä, 15.9.</li>
+      <li>Tenhola / 2022, 18.9.</li>
+      <li>Yökuppi: Poutunkangas, 22.9.</li>
+      <li>Tiirinkoski 2025, 25.9.</li>
+      <li>Yökuppi Moreeni, 29.9.</li>
+      <li>Kolkanmäki 2023, 2.10.</li>
+      <li>Yökuppi: Palssarinkangas, 6.10.</li>
+      <li>Yökuppi Tiehaaranvuori 2024, 13.10.</li>
+      <li>Yökuppi Tiirinkoski 2025, 20.10.</li>
     </ul>
 
     <div class="footer">
@@ -128,25 +130,22 @@
     const tiedostot = ['23032025.txt', '16042025.txt'];
     const pistetaulukko = [25, 22, 21, 18, 17, 15, 13, 11, 9, 7, 5, 3];
     const tulokset = {};
-    const sarakkeet = ['Kokonaissijoitus', 'Nimi', 'Osallistumisia', 'Pisteet'];
     const tapahtumaPvm = ['23.3.', '16.4.', '24.4.', '1.5.', '8.5.', '15.5.', '22.5.', '29.5.', '5.6.', '12.6.', '24.6.', '26.6.'];
-
-    tapahtumaPvm.forEach(pvm => sarakkeet.push(pvm));
 
     async function haeTulokset() {
       for (const tiedosto of tiedostot) {
-        const response = await fetch(tiedosto);
-        if (!response.ok) continue;
-        const text = await response.text();
-        const riviLista = text.trim().split('\n');
+        const vastaus = await fetch(tiedosto);
+        if (!vastaus.ok) continue;
+        const teksti = await vastaus.text();
+        const rivit = teksti.trim().split('\n');
         let rata = '', pvm = tiedosto.substring(0, 2) + '.' + tiedosto.substring(2, 4) + '.';
 
-        for (const rivi of riviLista) {
+        for (const rivi of rivit) {
           if (rivi.startsWith('Rata')) {
             rata = rivi.trim();
             if (!tulokset[rata]) tulokset[rata] = new Map();
           } else if (rivi.trim()) {
-            const match = rivi.match(/^(\d+)\.\s+(.*?)$/);
+            const match = rivi.match(/^(\d+)\.\s+(.+?)$/);
             if (match) {
               const sijoitus = parseInt(match[1]);
               const nimi = match[2].trim();
@@ -180,7 +179,7 @@
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
 
-        sarakkeet.forEach(otsikko => {
+        ['Kokonaissijoitus', 'Nimi', 'Osallistumisia', 'Pisteet', ...tapahtumaPvm].forEach(otsikko => {
           const th = document.createElement('th');
           th.textContent = otsikko;
           headerRow.appendChild(th);
@@ -192,10 +191,11 @@
         const tbody = document.createElement('tbody');
         osallistujat.forEach((os, i) => {
           const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${i + 1}.</td><td class="name">${os.nimi}</td><td class="osallistumisia">${os.osallistumisia}</td><td>${os.pisteet}</td>`;
+          let html = `<td>${i + 1}.</td><td>${os.nimi}</td><td>${os.osallistumisia}</td><td>${os.pisteet}</td>`;
           tapahtumaPvm.forEach(pvm => {
-            tr.innerHTML += `<td>${os.osallistumiset[pvm] || (tiedostot.some(f => f.startsWith(pvm.replace('.', ''))) ? 'x' : '')}</td>`;
+            html += `<td>${pvm in os.osallistumiset ? os.osallistumiset[pvm] + '.' : ''}</td>`;
           });
+          tr.innerHTML = html;
           tbody.appendChild(tr);
         });
 
