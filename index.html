@@ -144,9 +144,10 @@
             rata = rivi;
             if (!radat[rata]) radat[rata] = [];
           } else if (rivi.trim() && rata) {
-            const [sijoitus, nimi] = rivi.split(/[.]\s+/, 2);
+            const [sijoitus, ...nimiParts] = rivi.split(/\s+/);
+            const nimi = nimiParts.join(' ').trim();
             const paivamaara = tiedosto.substring(0, 2) + '.' + tiedosto.substring(2, 4) + '.';
-            radat[rata].push({ nimi: nimi.trim(), sijoitus: parseInt(sijoitus), paivamaara });
+            radat[rata].push({ nimi, sijoitus: parseInt(sijoitus), paivamaara });
           }
         });
       }
