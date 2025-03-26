@@ -125,9 +125,13 @@
   </aside>
 
   <script>
-    const tiedostot = ['23032025.txt', '16042025.txt', '24042025.txt', '01052025.txt', '08052025.txt'];
+    const tiedostot = ['23032025.txt', '16042025.txt'];
     const pistetaulukko = [25, 22, 21, 18, 17, 15, 13, 11, 9, 7, 5, 3];
     const tulokset = {};
+    const sarakkeet = ['Kokonaissijoitus', 'Nimi', 'Osallistumisia', 'Pisteet'];
+    const tapahtumaPvm = ['23.3.', '16.4.', '24.4.', '1.5.', '8.5.', '15.5.', '22.5.', '29.5.', '5.6.', '12.6.', '24.6.', '26.6.'];
+
+    tapahtumaPvm.forEach(pvm => sarakkeet.push(pvm));
 
     async function haeTulokset() {
       for (const tiedosto of tiedostot) {
@@ -135,11 +139,11 @@
         if (!response.ok) continue;
         const text = await response.text();
         const riviLista = text.trim().split('\n');
-        let rata = '';
+        let rata = '', pvm = tiedosto.substring(0, 2) + '.' + tiedosto.substring(2, 4) + '.';
 
         for (const rivi of riviLista) {
           if (rivi.startsWith('Rata')) {
-            rata = rivi.split(' ')[0] + ' ' + rivi.split(' ')[1];
+            rata = rivi.trim();
             if (!tulokset[rata]) tulokset[rata] = new Map();
           } else if (rivi.trim()) {
             const match = rivi.match(/^(\d+)\.\s+(.*?)$/);
@@ -148,11 +152,17 @@
               const nimi = match[2].trim();
               const pisteet = sijoitus <= pistetaulukko.length ? pistetaulukko[sijoitus - 1] : 1;
               if (!tulokset[rata].has(nimi)) {
-                tulokset[rata].set(nimi, { nimi, osallistumisia: 0, pisteet: 0 });
+                tulokset[rata].set(nimi, {
+                  nimi,
+                  osallistumisia: 0,
+                  pisteet: 0,
+                  osallistumiset: {}
+                });
               }
               const henkilo = tulokset[rata].get(nimi);
               henkilo.osallistumisia++;
               henkilo.pisteet += pisteet;
+              henkilo.osallistumiset[pvm] = sijoitus;
             }
           }
         }
@@ -167,21 +177,26 @@
         wrapper.className = 'table-wrapper';
 
         const taulukko = document.createElement('table');
-        taulukko.innerHTML = `<thead><tr>
-          <th>Kokonaissijoitus</th>
-          <th>Nimi</th>
-          <th>Osallistumisia</th>
-          <th>Pisteet</th>
-        </tr></thead>`;
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+
+        sarakkeet.forEach(otsikko => {
+          const th = document.createElement('th');
+          th.textContent = otsikko;
+          headerRow.appendChild(th);
+        });
+
+        thead.appendChild(headerRow);
+        taulukko.appendChild(thead);
 
         const tbody = document.createElement('tbody');
         osallistujat.forEach((os, i) => {
-          tbody.innerHTML += `<tr>
-            <td>${i + 1}.</td>
-            <td class="name">${os.nimi}</td>
-            <td class="osallistumisia">${os.osallistumisia}</td>
-            <td>${os.pisteet}</td>
-          </tr>`;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${i + 1}.</td><td class="name">${os.nimi}</td><td class="osallistumisia">${os.osallistumisia}</td><td>${os.pisteet}</td>`;
+          tapahtumaPvm.forEach(pvm => {
+            tr.innerHTML += `<td>${os.osallistumiset[pvm] || (tiedostot.some(f => f.startsWith(pvm.replace('.', ''))) ? 'x' : '')}</td>`;
+          });
+          tbody.appendChild(tr);
         });
 
         taulukko.appendChild(tbody);
