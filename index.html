@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <link rel="icon" href="Logo.png" type="image/png">
-
   <title>HSRastit 2025 - Tilastopalvelu</title>
   <style>
     body {
@@ -32,21 +31,62 @@
       margin-top: 2rem;
       color: #1e3c72;
     }
+    /* Taulukon wrapper: kapeampi ja rajattu korkeudeltaan (noin 15 riviä + otsikkorivi) */
     .table-wrapper {
-      overflow-x: auto;
-      max-width: 100%;
+      overflow: auto;
+      max-width: 800px; /* taulukko hieman kapeampi */
+      max-height: 480px; /* riittää noin 15 datariville */
+      border: 1px solid #ccc;
+      margin-bottom: 2rem;
+      position: relative;
     }
     table {
       border-collapse: collapse;
       width: max-content;
-      margin-bottom: 2rem;
     }
     th, td {
       border: 1px solid #ccc;
       padding: 4px;
       text-align: center;
-      min-width: 40px;
       background-color: white;
+      height: 30px;  /* kiinteä rivikorkeus */
+      min-width: 40px;
+    }
+    /* Jäädytetyt ylärivit */
+    thead th {
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 5;
+    }
+    /* Jäädytetyt ensimmäiset neljä saraketta */
+    table th:nth-child(1), table td:nth-child(1) {
+      position: sticky;
+      left: 0;
+      background: white;
+      z-index: 4;
+      width: 60px;
+    }
+    table th:nth-child(2), table td:nth-child(2) {
+      position: sticky;
+      left: 60px;
+      background: white;
+      z-index: 4;
+      width: 150px;
+    }
+    table th:nth-child(3), table td:nth-child(3) {
+      position: sticky;
+      left: 210px; /* 60 + 150 */
+      background: white;
+      z-index: 4;
+      width: 100px;
+    }
+    table th:nth-child(4), table td:nth-child(4) {
+      position: sticky;
+      left: 310px; /* 60 + 150 + 100 */
+      background: white;
+      z-index: 4;
+      width: 80px;
     }
     ul {
       padding-left: 1.2rem;
@@ -72,7 +112,8 @@
   <main>
     <h1>HSRastit 2025 - Pistekooste</h1>
      
-    <p><!-- Selitetään pisteytys -->
+    <p>
+      <!-- Selitetään pisteytys -->
       Tällä sivustolla ylläpidetään leikkimielisesti epävirallista Hämeenlinnan Seudun kuntorastien pistetilannetta<br><br>
       Näet alta HSRastit 2025 -tapahtumien pistetilanteen. Pisteitä kuntorasteilta saa seuraavasti:<br>
       Voittajalle 15, seuraavalle 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, muut 1 piste, hylätty 0 pistettä.<br><br>
@@ -91,7 +132,6 @@
     <ul id="tulevat"></ul>
 
     <div class="footer">
-      
       <img src="Logo.png" alt="Takaperän Ponnistus" width="200" /><br><br>
       <p>Sivustoa ylläpitää<br>
       <strong>Takaperän Ponnistus</strong><br><br><br><br><br>
@@ -208,7 +248,6 @@
           tr.innerHTML = td.map(s => `<td>${s}</td>`).join('');
           tbody.appendChild(tr);
         });
-
         taulukko.appendChild(tbody);
         const otsikko = document.createElement('h2');
         otsikko.textContent = sarja;
