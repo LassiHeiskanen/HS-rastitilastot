@@ -127,10 +127,9 @@
 
   <script>
     const tapahtumapaivat = ['23.3.', '16.4.', '24.4.', '1.5.', '8.5.', '15.5.', '22.5.', '29.5.', '5.6.', '12.6.', '24.6.', '26.6.', '1.7.', '3.7.', '8.7.', '10.7.', '15.7.', '17.7.', '22.7.', '24.7.', '31.7.', '7.8.', '14.8.', '21.8.', '28.8.', '4.9.', '11.9.', '15.9.', '18.9.', '22.9.', '25.9.', '29.9.', '2.10.', '6.10.', '13.10.', '20.10.'];
-    const menneet = ['23032025.txt', '16042025.txt'];
+    const tiedostot = ['23032025.txt', '16042025.txt'];
 
     async function haeTulokset() {
-      const tiedostot = menneet;
       const radat = {};
 
       for (const tiedosto of tiedostot) {
@@ -138,36 +137,32 @@
         const teksti = await vastaus.text();
         const rivit = teksti.trim().split('\n');
         let rata = '';
-        const paivamaara = tiedosto.substring(0, 2) + '.' + tiedosto.substring(2, 4) + '.';
+        const paivamaara = tiedosto.slice(0,2) + '.' + tiedosto.slice(2,4) + '.';
 
         rivit.forEach(rivi => {
           if (rivi.startsWith('Rata')) {
             rata = rivi.split(' ')[0] + ' ' + rivi.split(' ')[1];
-            if (!radat[rata]) radat[rata] = [];
+            if (!radat[rata]) radat[rata] = new Map();
           } else if (rivi.trim() && rata) {
             const match = rivi.match(/^(\d+)\.\s+(.*?)\s+(\d{1,2}\.\d{2}(?:\.\d{2})?)?/);
             if (match) {
               const sijoitus = parseInt(match[1]);
               const nimi = match[2].trim();
-              radat[rata].push({ nimi, sijoitus, paivamaara });
+              if (!radat[rata].has(nimi)) {
+                radat[rata].set(nimi, { nimi, osallistumisia: 0, sijoitukset: {} });
+              }
+              const os = radat[rata].get(nimi);
+              os.sijoitukset[paivamaara] = sijoitus;
+              os.osallistumisia++;
             }
           }
         });
       }
 
       for (const rata in radat) {
-        const osallistujat = new Map();
+        const osallistujat = Array.from(radat[rata].values());
 
-        radat[rata].forEach(({ nimi, sijoitus, paivamaara }) => {
-          if (!osallistujat.has(nimi)) {
-            osallistujat.set(nimi, { nimi, osallistumisia: 0, sijoitukset: {} });
-          }
-          const os = osallistujat.get(nimi);
-          os.sijoitukset[paivamaara] = sijoitus;
-          os.osallistumisia++;
-        });
-
-        const jarjestetty = Array.from(osallistujat.values()).sort((a, b) => {
+        const jarjestetty = osallistujat.sort((a, b) => {
           for (let s = 1; s <= 10; s++) {
             const aCount = Object.values(a.sijoitukset).filter(x => x === s).length;
             const bCount = Object.values(b.sijoitukset).filter(x => x === s).length;
@@ -198,7 +193,7 @@
           tapahtumapaivat.forEach(pvm => {
             if (os.sijoitukset[pvm]) {
               rivi += `<td>${os.sijoitukset[pvm]}.</td>`;
-            } else if (menneet.some(t => t.startsWith(pvm.replace('.', '')))) {
+            } else if (tiedostot.some(t => t.startsWith(pvm.replace('.', '')))) {
               rivi += '<td>x</td>';
             } else {
               rivi += '<td></td>';
