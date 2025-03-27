@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="Logo.png" type="image/png">
+  <title>HSRastit 2025 - Tilastopalvelu</title>
+  <style>
+    /* Peruslayout (tietokoneella asettelu vierekkäin) */
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      padding: 2rem;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+    }
+    main {
+      flex: 3;
+      min-width: 0;
+    }
+    /* Kalenteripaneeli: oletuksena näkyvissä, jos haluat piiloon, poista "active"-luokka HTML:stä */
+    aside {
+      flex: 1;
+      background: #eef4fa;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      display: none; /* Piilota oletuksena */
+    }
+    aside.active {
+      display: block; /* Näytä, kun luokka "active" on lisätty */
+    }
+
+    h1 {
+      color: #2a4d69;
+      margin-top: 0;
+    }
+    h2 {
+      margin-top: 2rem;
+      color: #1e3c72;
+    }
+
+    /* Taulukon sticky- ja scroll-ominaisuudet (sama kuin aiemmin) */
+    .table-container {
+      margin-bottom: 2rem;
+    }
+    .table-wrapper {
+      overflow: auto;
+      max-width: 1200px;  /* Leveys, jolloin sivupalkki ilmestyy */
+      max-height: 480px;  /* Korkeus, jolloin sivupalkki ilmestyy */
+      border: 1px solid #ccc;
+      position: relative;
+    }
+    table {
+      border-collapse: collapse;
+      width: max-content;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 4px;
+      text-align: center;
+      background-color: white;
+      height: 30px;
+      white-space: nowrap;
+    }
+    /* Sarakkeiden leveydet ja sticky-asetukset */
+    thead th:nth-child(1), tbody td:nth-child(1) {
+      width: 60px; /* Sija */
+    }
+    thead th:nth-child(2), tbody td:nth-child(2) {
+      width: 200px; /* Nimi */
+    }
+    thead th:nth-child(3), tbody td:nth-child(3) {
+      width: 80px; /* kisat */
+    }
+    thead th:nth-child(4), tbody td:nth-child(4) {
+      width: 100px; /* Pisteet */
+    }
+    thead th {
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
+    }
+    tbody td:nth-child(1) {
+      position: sticky;
+      left: 0;
+      z-index: 5;
+      background: white;
+    }
+    thead th:nth-child(1) {
+      position: sticky;
+      left: 0;
+      top: 0;
+      z-index: 11;
+      background: white;
+    }
+    tbody td:nth-child(2) {
+      position: sticky;
+      left: 60px;
+      z-index: 5;
+      background: white;
+    }
+    thead th:nth-child(2) {
+      position: sticky;
+      left: 60px;
+      top: 0;
+      z-index: 11;
+      background: white;
+    }
+    tbody td:nth-child(3) {
+      position: sticky;
+      left: 260px; /* 60 + 200 */
+      z-index: 5;
+      background: white;
+    }
+    thead th:nth-child(3) {
+      position: sticky;
+      left: 260px;
+      top: 0;
+      z-index: 11;
+      background: white;
+    }
+    tbody td:nth-child(4) {
+      position: sticky;
+      left: 340px; /* 60 + 200 + 80 */
+      z-index: 5;
+      background: white;
+    }
+    thead th:nth-child(4) {
+      position: sticky;
+      left: 340px;
+      top: 0;
+      z-index: 11;
+      background: white;
+    }
+
+    ul {
+      padding-left: 1.2rem;
+    }
+    li {
+      margin-bottom: 0.5rem;
+    }
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: #333;
+    }
+    .footer a {
+      color: #2a4d69;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Painike, josta kalenterin saa näkyviin/piiloon.
+       Halutessasi voit sijoittaa sen esim. sivun yläreunaan tai muualle. */
+    #toggleCalendar {
+      position: fixed;
+      top: 90%;
+      right: 0;
+      transform: translateY(-50%);
+      padding: 0.5rem 1rem;
+      background-color: #2a4d69;
+      color: white;
+      border: none;
+      border-radius: 4px 0 0 4px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    /* (Vaihtoehtoisesti) Jos haluat edelleen responsiivista layoutia,
+       voit lisätä media queryn, joka muuttaa bodyn flex-direction: column; */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>HSRastit 2025 - Pistekooste</h1>
+    <p>
+      Tällä sivustolla ylläpidetään leikkimielisesti epävirallista Hämeenlinnan Seudun kuntorastien pistetilannetta.<br>
+      Pisteitä kuntorasteilta saa seuraavasti:<br>
+      Voittajalle 15, seuraavalle 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, muut 1 piste, hylätty 0 pistettä.<br><br><br>
+      
+    </p>
+    <h2>Street-O Hämeenlinna</h2>
+    <div id="tulokset"></div>
+  </main>
+
+  <!-- HUOM: class="active" => aside näkyy heti. 
+       Poista "active", jos haluat piilottaa kalenterin oletuksena. -->
+  <aside id="calendarPanel" class="active">
+    <h1>Kisakalenteri</h1>
+    <h2>Menneet tapahtumat</h2>
+    <ul id="menneet"></ul>
+    <h2>Tulevat tapahtumat</h2>
+    <ul id="tulevat"></ul>
+    <div class="footer">
+      <img src="Logo.png" alt="Takaperän Ponnistus" width="200"><br><br>
+      <p>Sivustoa ylläpitää<br>
+         <strong>Takaperän Ponnistus</strong><br><br>
+         <a href="https://hsrastit.info/hsrastit-2025/">Hämeenlinnan Seudun kuntorastit</a>
+      </p>
+    </div>
+  </aside>
+
+  <!-- Painike, jolla näytetään/piilotetaan kalenteri riippumatta näytön leveydestä -->
+  <button id="toggleCalendar">Piilota kalenteri</button>
+
+  <script>
+    // Tapahtumat
+    const tapahtumat = [
+      { nimi: "Kauppatori, Hämeenlinna", pvm: "03.03.", tiedosto: null },
+      { nimi: "Luolaja, Hämeenlinna", pvm: "10.03.", tiedosto: null },
+      { nimi: "Parola, Hämeenlinna", pvm: "17.03.", tiedosto: null },
+      { nimi: "Idänpään Torppa, Hämeenlinna", pvm: "24.03.", tiedosto: null },
+      
+      // ... Lisää halutessasi
+    ];
+
+    const pistetaulukko = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
+    const sarjat = ['Street-O'];
+    const tulokset = Object.fromEntries(sarjat.map(s => [s, new Map()]));
+
+    async function haeTulokset() {
+      for (const tapahtuma of tapahtumat) {
+        if (!tapahtuma.tiedosto) continue;
+        try {
+          const res = await fetch(tapahtuma.tiedosto);
+          const data = await res.json();
+          for (const sarja in data) {
+            data[sarja].forEach((nimi, index) => {
+              const cleanNimi = nimi
+                .replace(/^\d+\.\s*/, '')
+                .replace(/\s+\d.*$/, '')
+                .trim();
+              if (!tulokset[sarja].has(cleanNimi)) {
+                tulokset[sarja].set(cleanNimi, {
+                  nimi: cleanNimi,
+                  osallistumisia: 0,
+                  pisteet: 0,
+                  sijoitukset: {}
+                });
+              }
+              const henkilo = tulokset[sarja].get(cleanNimi);
+              henkilo.osallistumisia++;
+              henkilo.sijoitukset[tapahtuma.pvm] = index + 1;
+              const piste = pistetaulukko[index] ?? 1;
+              henkilo.pisteet += piste;
+            });
+          }
+        } catch (e) {
+          console.warn(`Tiedoston ${tapahtuma.tiedosto} lataus epäonnistui: `, e);
+        }
+      }
+
+      // Täytetään kalenterin listat
+      const menneet = document.getElementById('menneet');
+      const tulevat = document.getElementById('tulevat');
+      tapahtumat.forEach(t => {
+        const li = document.createElement('li');
+        li.textContent = `${t.nimi}, ${t.pvm}`;
+        (t.tiedosto ? menneet : tulevat).appendChild(li);
+      });
+
+      // Luodaan sarjataulukot
+      const container = document.getElementById('tulokset');
+      sarjat.forEach(sarja => {
+        const data = Array.from(tulokset[sarja].values()).sort((a, b) => b.pisteet - a.pisteet);
+        const tableContainer = document.createElement('div');
+        tableContainer.className = 'table-container';
+
+        // Otsikko
+        const otsikko = document.createElement('h2');
+        otsikko.textContent = sarja;
+        tableContainer.appendChild(otsikko);
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-wrapper';
+
+        const taulukko = document.createElement('table');
+        const thead = document.createElement('thead');
+        const trHead = document.createElement('tr');
+        // 1. sarake = "Sija", 3. sarake = "kisat"
+        const header = ['Sija', 'Nimi', 'kisat', 'Pisteet', ...tapahtumat.map(t => t.pvm)];
+
+        header.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          trHead.appendChild(th);
+        });
+        thead.appendChild(trHead);
+        taulukko.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        data.forEach((os, i) => {
+          const tr = document.createElement('tr');
+          const rivinSolut = [
+            (i + 1) + '.', 
+            os.nimi, 
+            os.osallistumisia, 
+            os.pisteet
+          ];
+          tapahtumat.forEach(t => {
+            const sijoitus = os.sijoitukset[t.pvm] ? os.sijoitukset[t.pvm] + '.' : '';
+            rivinSolut.push(sijoitus);
+          });
+          tr.innerHTML = rivinSolut.map(s => `<td>${s}</td>`).join('');
+          tbody.appendChild(tr);
+        });
+        taulukko.appendChild(tbody);
+
+        wrapper.appendChild(taulukko);
+        tableContainer.appendChild(wrapper);
+        container.appendChild(tableContainer);
+      });
+    }
+
+    haeTulokset();
+
+    // PAIKKA, jossa togglataan aside ja vaihdetaan painikkeen teksti
+    const asideEl = document.getElementById("calendarPanel");
+    const toggleBtn = document.getElementById("toggleCalendar");
+
+    // Asetetaan oikea aloitusteksti sen mukaan, onko aside näkyvissä vai piilossa
+    function updateButtonText() {
+      if (asideEl.classList.contains("active")) {
+        toggleBtn.textContent = "Piilota kalenteri";
+      } else {
+        toggleBtn.textContent = "Näytä kalenteri";
+      }
+    }
+    updateButtonText(); // Päivitetään painikkeen teksti sivun latautuessa
+
+    toggleBtn.addEventListener("click", function() {
+      asideEl.classList.toggle("active");
+      updateButtonText();
+    });
+  </script>
+</body>
+</html>
